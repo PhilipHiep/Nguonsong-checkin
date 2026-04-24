@@ -35,25 +35,25 @@
   <div id="mainContent" class="flex min-h-screen opacity-0 transition-opacity duration-500">
     <!-- SIDEBAR -->
     <aside class="w-80 bg-white border-r p-6 flex flex-col gap-6 shadow-xl z-10">
-      <h1 class="font-black text-xl text-blue-600 uppercase italic text-center">Hội Thánh Nguồn Sống - Check-In System</h1>
+      <h1 class="font-black text-xl text-blue-600 uppercase italic text-center">Hội Thánh Nguồn Sống Check-In System</h1>
       <div class="space-y-4 pt-4 border-t">
         <div class="space-y-1">
-          <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Full Name / Họ và tên</label>
+          <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Full Name / Họ và tên</label>
           <input type="text" id="newName" placeholder="Enter name..." class="w-full p-3 rounded-xl border text-sm outline-none bg-white transition-all">
         </div>
 
         <div class="space-y-1">
           <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Family Code / Mã gia đình</label>
-          <input type="text" id="newCode" placeholder="e.g. 101" class="w-full p-3 rounded-xl border-2 border-blue-100 text-sm outline-none bg-blue-50/30 font-bold">
+          <input type="text" id="newCode" placeholder="e.g. 101 / ví dụ: 101" class="w-full p-3 rounded-xl border-2 border-blue-100 text-sm outline-none bg-blue-50/30 font-bold">
         </div>
 
         <div class="space-y-1">
-          <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Phone / Số điện thoại</label>
-          <input type="text" id="newPhone" placeholder="090..." class="w-full p-3 rounded-xl border text-sm outline-none bg-white">
+          <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Phone / Số điện thoại</label>
+          <input type="text" id="newPhone" placeholder="678..." class="w-full p-3 rounded-xl border text-sm outline-none bg-white">
         </div>
 
         <div class="space-y-1">
-          <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Payment / Thanh toán</label>
+          <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Payment / Thanh toán</label>
           <select id="newPayment" class="w-full p-3 rounded-xl border text-sm outline-none bg-white">
             <option value="Pending">Pending / Chưa đóng</option>
             <option value="Done">Done / Đã đóng</option>
@@ -64,7 +64,7 @@
         <button id="saveBtn" onclick="saveToGoogle()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-xs uppercase shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all mt-2">
           Save & Continue / Lưu & Tiếp tục
         </button>
-        <button onclick="logout()" class="w-full text-slate-300 text-[9px] font-bold uppercase tracking-widest mt-10 hover:text-red-400">Disconnect System / Hủy Kết Nối Hệ Thống</button>
+        <button onclick="logout()" class="w-full text-blue-500 text-[9px] font-bold uppercase tracking-widest mt-10 hover:text-red-400">Disconnect System / Hủy Kết Nối Hệ Thống</button>
       </div>
     </aside>
 
@@ -83,7 +83,7 @@
           </div>
           <div id="familyActionBox" class="hidden">
              <button id="familyBtn" onclick="payFullFamily()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-sm shadow-xl flex items-center justify-center gap-3 hover:bg-orange-600 transition-all">
-               <i class="fas fa-users text-xl"></i> PAY FOR ENTIRE FAMILY / THU TIỀN CẢ GIA ĐÌNH
+               <i class="fas fa-users text-xl"></i> PAY FOR ENTIRE FAMILY / THANH TOÁN CHO CẢ GIA ĐÌNH
              </button>
           </div>
         </div>
