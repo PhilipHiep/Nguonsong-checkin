@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nguồn Sống OS - Final Fix v40</title>
+  <title>Hội Thánh Nguồn Sống - Check-In System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -25,29 +25,46 @@
   <div id="lockScreen" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-6 hidden">
     <div class="bg-white p-8 rounded-[2.5rem] max-w-md w-full shadow-2xl text-center">
       <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6"><i class="fas fa-key"></i></div>
-      <h2 class="text-2xl font-black text-slate-800 mb-2 uppercase">System Access</h2>
-      <p class="text-slate-500 text-sm mb-8">Vui lòng nhập URL Google Script để kết nối.</p>
+      <h2 class="text-2xl font-black text-slate-800 mb-2 uppercase">System Access / Truy cập hệ thống</h2>
+      <p class="text-slate-500 text-sm mb-8">Please enter your Google Script URL to connect / Vui lòng nhập URL Google Script để kết nối.</p>
       <input type="password" id="secureUrlInput" placeholder="https://script.google.com/macros/s/..." class="w-full p-4 border-2 border-slate-100 rounded-2xl mb-4 outline-none focus:border-blue-500 transition-all text-sm">
-      <button onclick="unlockSystem()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold uppercase shadow-lg hover:bg-blue-700 transition-all">Connect System</button>
+      <button onclick="unlockSystem()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold uppercase shadow-lg hover:bg-blue-700 transition-all">Connect / Kết nối</button>
     </div>
   </div>
 
   <div id="mainContent" class="flex min-h-screen opacity-0 transition-opacity duration-500">
     <!-- SIDEBAR -->
     <aside class="w-80 bg-white border-r p-6 flex flex-col gap-6 shadow-xl z-10">
-      <h1 class="font-black text-xl text-blue-600 uppercase italic text-center">Nguồn Sống OS</h1>
+      <h1 class="font-black text-xl text-blue-600 uppercase italic text-center">Hội Thánh Nguồn Sống - Check-In System</h1>
       <div class="space-y-4 pt-4 border-t">
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic mb-2">Registration / Đăng ký</p>
-        <input type="text" id="newName" placeholder="Full Name..." class="w-full p-3 rounded-xl border text-sm outline-none">
-        <input type="text" id="newCode" placeholder="Family Code (e.g 101)" class="w-full p-3 rounded-xl border-2 border-blue-100 text-sm outline-none font-bold">
-        <input type="text" id="newPhone" placeholder="Phone..." class="w-full p-3 rounded-xl border text-sm outline-none">
-        <select id="newPayment" class="w-full p-3 rounded-xl border text-sm outline-none font-bold">
-          <option value="Pending">Pending</option>
-          <option value="Done">Done</option>
-          <option value="Free">Free (Kid)</option>
-        </select>
-        <button id="saveBtn" onclick="saveToGoogle()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-xs uppercase shadow-lg hover:bg-blue-700 transition-all">Save & Sync</button>
-        <button onclick="logout()" class="w-full text-slate-300 text-[9px] font-bold uppercase tracking-widest mt-10 hover:text-red-400">Disconnect System</button>
+        <div class="space-y-1">
+          <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Full Name / Họ và tên</label>
+          <input type="text" id="newName" placeholder="Enter name..." class="w-full p-3 rounded-xl border text-sm outline-none bg-white transition-all">
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Family Code / Mã gia đình</label>
+          <input type="text" id="newCode" placeholder="e.g. 101" class="w-full p-3 rounded-xl border-2 border-blue-100 text-sm outline-none bg-blue-50/30 font-bold">
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Phone / Số điện thoại</label>
+          <input type="text" id="newPhone" placeholder="090..." class="w-full p-3 rounded-xl border text-sm outline-none bg-white">
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Payment / Thanh toán</label>
+          <select id="newPayment" class="w-full p-3 rounded-xl border text-sm outline-none bg-white">
+            <option value="Pending">Pending / Chưa đóng</option>
+            <option value="Done">Done / Đã đóng</option>
+            <option value="Free">Free / Miễn phí (Kid / Trẻ em)</option>
+          </select>
+        </div>
+
+        <button id="saveBtn" onclick="saveToGoogle()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-xs uppercase shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all mt-2">
+          Save & Continue / Lưu & Tiếp tục
+        </button>
+        <button onclick="logout()" class="w-full text-slate-300 text-[9px] font-bold uppercase tracking-widest mt-10 hover:text-red-400">Disconnect System / Hủy Kết Nối Hệ Thống</button>
       </div>
     </aside>
 
@@ -66,7 +83,7 @@
           </div>
           <div id="familyActionBox" class="hidden">
              <button id="familyBtn" onclick="payFullFamily()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-sm shadow-xl flex items-center justify-center gap-3 hover:bg-orange-600 transition-all">
-               <i class="fas fa-users text-xl"></i> PAY FOR ENTIRE FAMILY
+               <i class="fas fa-users text-xl"></i> PAY FOR ENTIRE FAMILY / THU TIỀN CẢ GIA ĐÌNH
              </button>
           </div>
         </div>
@@ -78,23 +95,23 @@
   <!-- MODALS (Status & Name) -->
   <div id="statusModal" class="fixed inset-0 modal-overlay z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl text-center">
-      <h2 class="text-xl font-black text-slate-800 mb-2 uppercase italic">Update Status</h2>
+      <h2 class="text-xl font-black text-slate-800 mb-2 uppercase italic">Update Status / Cập nhật thanh toán</h2>
       <p id="statusTargetName" class="text-blue-600 font-bold mb-6 border-b pb-2"></p>
       <div class="space-y-3">
-        <button onclick="applyStatusFix('Pending')" class="w-full py-4 rounded-2xl bg-red-50 text-red-600 font-bold uppercase text-xs border border-red-100 hover:bg-red-100">Pending</button>
-        <button onclick="applyStatusFix('Done')" class="w-full py-4 rounded-2xl bg-green-50 text-green-600 font-bold uppercase text-xs border border-green-100 hover:bg-green-100">Done</button>
-        <button onclick="applyStatusFix('Free')" class="w-full py-4 rounded-2xl bg-blue-50 text-blue-600 font-bold uppercase text-xs border border-blue-100 hover:bg-blue-100">Free</button>
-        <button onclick="closeModals()" class="w-full py-3 mt-4 text-slate-400 font-bold uppercase text-[10px]">Cancel</button>
+        <button onclick="applyStatusFix('Pending')" class="w-full py-4 rounded-2xl bg-red-50 text-red-600 font-bold uppercase text-xs border border-red-100 hover:bg-red-100 transition-all">Pending (Chưa đóng)</button>
+        <button onclick="applyStatusFix('Done')" class="w-full py-4 rounded-2xl bg-green-50 text-green-600 font-bold uppercase text-xs border border-green-100 hover:bg-green-100 transition-all">Done (Đã đóng)</button>
+        <button onclick="applyStatusFix('Free')" class="w-full py-4 rounded-2xl bg-blue-50 text-blue-600 font-bold uppercase text-xs border border-blue-100 hover:bg-blue-100 transition-all">Free (Trẻ em)</button>
+        <button onclick="closeModals()" class="w-full py-3 mt-4 text-slate-400 font-bold uppercase text-[10px]">Cancel / Hủy</button>
       </div>
     </div>
   </div>
 
   <div id="nameModal" class="fixed inset-0 modal-overlay z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl text-center">
-      <h2 class="text-xl font-black text-slate-800 mb-6 uppercase italic">Edit Name</h2>
+      <h2 class="text-xl font-black text-slate-800 mb-6 uppercase italic">Edit Name / Sửa Tên</h2>
       <input type="text" id="editNameInput" class="w-full p-4 rounded-xl border-2 border-blue-100 outline-none font-bold text-lg mb-4">
-      <button onclick="applyNameFix()" class="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold uppercase text-xs shadow-lg hover:bg-blue-700">Update Name</button>
-      <button onclick="closeModals()" class="w-full py-3 mt-2 text-slate-400 font-bold uppercase text-[10px]">Cancel</button>
+      <button onclick="applyNameFix()" class="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold uppercase text-xs shadow-lg hover:bg-blue-700">Update Name / Cập nhật Tên</button>
+      <button onclick="closeModals()" class="w-full py-3 mt-2 text-slate-400 font-bold uppercase text-[10px]">Cancel / Hủy</button>
     </div>
   </div>
 
@@ -118,7 +135,7 @@
         SCRIPT_URL = input;
         document.getElementById('lockScreen').classList.add('hidden');
         showMain(); fetchData();
-      } else alert("Invalid URL!");
+      } else alert("Invalid URL / URL Không đúng!");
     }
 
     function showMain() { document.getElementById('mainContent').classList.remove('opacity-0'); }
@@ -170,7 +187,7 @@
       try {
         const res = await sendCommand({ action: 'UpdateSingle', name: currentEditingName, payment: newStatus });
         if(res.status === 'success') await fetchData();
-      } catch (e) { alert("Error!"); } finally { isWorking = false; }
+      } catch (e) { alert("Error / Lỗi!"); } finally { isWorking = false; }
     }
 
     async function applyNameFix() {
@@ -180,7 +197,7 @@
       try {
         const res = await sendCommand({ action: 'UpdateName', oldName: currentEditingName, newName: newName });
         if(res.status === 'success') await fetchData();
-      } catch (e) { alert("Error!"); } finally { isWorking = false; }
+      } catch (e) { alert("Error / Lỗi!"); } finally { isWorking = false; }
     }
 
     function renderList() {
@@ -215,18 +232,18 @@
               <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl font-black uppercase">${item.Name ? item.Name.toString().charAt(0) : '?'}</div>
               <div>
                 <h3 class="font-black text-slate-800 uppercase text-lg flex items-center gap-2">
-                  ${item.Name} <i onclick="openNameFix('${item.Name}')" class="fas fa-pen text-[10px] text-slate-300 cursor-pointer edit-trigger"></i>
+                  ${item.Name} <i onclick="openNameFix('${item.Name}')" class="fas fa-pen text-[10px] text-slate-300 cursor-pointer edit-trigger title="Edit Name / Sửa Tên"></i>
                 </h3>
                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest italic">#${item['Family Code'] || '---'}</p>
               </div>
             </div>
             <div class="flex items-center gap-6">
               <div class="flex items-center gap-2">
-                <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase ${statusClass}">${free ? 'FREE' : (item.Payment || 'Pending')}</span>
+                <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase ${statusClass}">${free ? 'FREE / MIỄN PHÍ' : (item.Payment || 'Pending')}</span>
                 <i onclick="openStatusFix('${item.Name}')" class="fas fa-pen text-[10px] text-slate-300 cursor-pointer edit-trigger"></i>
               </div>
               <div class="border-l pl-6">
-                ${(!done && !free) ? `<button id="btn-pay-${index}" onclick="updateSinglePayment('${item.Name}', ${index})" class="bg-green-500 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-lg hover:bg-green-600 transition-all">PAY</button>` : `<span class="text-[10px] font-bold text-slate-300 uppercase">${free ? 'KID' : 'DONE'}</span>`}
+                ${(!done && !free) ? `<button id="btn-pay-${index}" onclick="updateSinglePayment('${item.Name}', ${index})" class="bg-green-500 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-lg hover:bg-green-600 transition-all">PAY / Thanh toán</button>` : `<span class="text-[10px] font-bold text-slate-300 uppercase">${free ? 'KID / TRẺ EM' : 'DONE'}</span>`}
               </div>
             </div>
           </div>
@@ -236,27 +253,27 @@
 
     async function updateSinglePayment(name, idx) {
       if(isWorking) return;
-      if(confirm(`Confirm payment for: ${name}?`)) {
+      if(confirm(`Confirm payment for / Xác nhận thanh toán cho: ${name}?`)) {
         isWorking = true;
         const btn = document.getElementById('btn-pay-'+idx);
         btn.innerHTML = '...'; btn.classList.add('btn-processing');
         try {
           const res = await sendCommand({ action: 'UpdateSingle', name: name, payment: 'Done' });
           if(res.status === 'success') await fetchData();
-        } catch (e) { alert("Connection Error!"); } finally { isWorking = false; }
+        } catch (e) { alert("Connection Error / Lỗi Kết Nối!"); } finally { isWorking = false; }
       }
     }
 
     async function payFullFamily() {
       if(isWorking) return;
       const familyBtn = document.getElementById('familyBtn');
-      if(confirm(`Pay for ALL family #${currentFilteredFamilyCode}?`)) {
+      if(confirm(`Pay for ALL family / Thanh toán cho cả gia đình #${currentFilteredFamilyCode}?`)) {
         isWorking = true; familyBtn.classList.add('btn-processing');
-        familyBtn.innerHTML = 'PROCESSING...';
+        familyBtn.innerHTML = 'PROCESSING / ĐANG XỬ LÝ...';
         try {
           const res = await sendCommand({ action: 'UpdateFamily', familyCode: currentFilteredFamilyCode });
           if(res.status === 'success') await fetchData();
-        } catch (e) { alert("Connection Error!"); } finally { isWorking = false; familyBtn.classList.remove('btn-processing'); familyBtn.innerHTML = 'PAY FOR ENTIRE FAMILY'; }
+        } catch (e) { alert("Connection Error / Lỗi Kết Nối!"); } finally { isWorking = false; familyBtn.classList.remove('btn-processing'); familyBtn.innerHTML = 'PAY FOR ENTIRE FAMILY / THANH TOÁN CHO CẢ GIA ĐÌNH'; }
       }
     }
 
@@ -270,12 +287,14 @@
         Payment: document.getElementById('newPayment').value
       };
       if(!payload.Name) return;
-      isWorking = true; saveBtn.classList.add('btn-processing');
+      saveBtn.disabled = true;
+      saveBtn.classList.add('btn-processing');
+      saveBtn.innerHTML = '<i class="fas fa-spinner loading-spinner"></i> PROCESSING / ĐANG GHI NHẬN...';
       try {
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
         document.getElementById('newName').value = ""; document.getElementById('newPhone').value = "";
         setTimeout(async () => { await fetchData(); isWorking = false; saveBtn.classList.remove('btn-processing'); }, 1500);
-      } catch (e) { alert("Error!"); isWorking = false; saveBtn.classList.remove('btn-processing'); }
+      } catch (e) { alert("Network Error / Lỗi kết nối!"); isWorking = false; saveBtn.classList.remove('btn-processing'); }
     }
   </script>
 </body>
