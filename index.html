@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nguồn Sống OS - Secure Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+    /* ... (Giữ nguyên các CSS cũ) ... */
+    .status-done { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .status-pending { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .status-free { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+    .loading-spinner { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- MÀN HÌNH KHÓA (BẢO MẬT URL) -->
+  <div id="lockScreen" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-6 hidden">
+    <div class="bg-white p-8 rounded-[2.5rem] max-w-md w-full shadow-2xl text-center">
+      <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6">
+        <i class="fas fa-key"></i>
+      </div>
+      <h2 class="text-2xl font-black text-slate-800 mb-2 uppercase">System Access</h2>
+      <p class="text-slate-500 text-sm mb-8 font-medium">Please enter your System URL to connect.<br>Vui lòng nhập URL hệ thống để kết nối.</p>
+      <input type="password" id="secureUrlInput" placeholder="https://script.google.com/macros/s/..." 
+        class="w-full p-4 border-2 border-slate-100 rounded-2xl mb-4 outline-none focus:border-blue-500 transition-all text-sm">
+      <button onclick="unlockSystem()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold uppercase shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">
+        Connect System
+      </button>
+      <p class="text-[10px] text-slate-400 mt-6 uppercase tracking-widest font-bold">Nguon Song OS v3.9</p>
+    </div>
+  </div>
+
+  <div id="mainContent" class="flex min-h-screen opacity-0 transition-opacity duration-500">
+    <!-- SIDEBAR (Đã bỏ ô nhập URL) -->
+    <aside class="w-80 bg-white border-r p-6 flex flex-col gap-6 shadow-xl z-10">
+      <h1 class="font-black text-2xl text-blue-600 uppercase italic text-center">Nguồn Sống OS</h1>
+      <div class="space-y-3 pt-4 border-t">
+        <!-- Form đăng ký như cũ -->
+        <input type="text" id="newName" placeholder="Full Name..." class="w-full p-3 rounded-xl border text-sm outline-none">
+        <input type="text" id="newCode" placeholder="Family Code..." class="w-full p-3 rounded-xl border-2 border-blue-100 text-sm outline-none font-bold">
+        <input type="text" id="newPhone" placeholder="Phone..." class="w-full p-3 rounded-xl border text-sm outline-none">
+        <select id="newPayment" class="w-full p-3 rounded-xl border text-sm outline-none font-bold">
+          <option value="Pending">Pending</option>
+          <option value="Done">Done</option>
+          <option value="Free">Free (Kid)</option>
+        </select>
+        <button id="saveBtn" onclick="saveToGoogle()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-xs uppercase shadow-lg hover:bg-blue-700 transition-all">Save</button>
+        <button onclick="logout()" class="w-full text-slate-300 text-[9px] font-bold uppercase tracking-widest mt-10 hover:text-red-400">Disconnect System</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT (Giữ nguyên như v37) -->
+    <main class="flex-1 p-10">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-10">
+          <div class="relative flex-1">
+            <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-300"></i>
+            <input type="text" id="searchInput" onkeyup="renderList()" placeholder="Search..." class="w-full pl-16 pr-6 py-6 bg-white shadow-xl rounded-[2rem] text-xl font-bold border-none outline-none">
+          </div>
+          <button onclick="fetchData()" class="ml-4 w-16 h-16 bg-white rounded-full shadow-lg text-blue-600 flex items-center justify-center"><i class="fas fa-sync-alt" id="syncIcon"></i></button>
+        </div>
+        <div id="familyActionBox" class="hidden mb-6">
+           <button id="familyBtn" onclick="payFullFamily()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-sm shadow-xl">PAY ENTIRE FAMILY</button>
+        </div>
+        <div id="resultList" class="space-y-4"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- (Các Modal Quick Fix giữ nguyên như v37) -->
+
+  <script>
+    let SCRIPT_URL = "";
+
+    window.onload = () => {
+      const savedUrl = localStorage.getItem('nguonSongUrl');
+      if(!savedUrl) {
+        document.getElementById('lockScreen').classList.remove('hidden');
+      } else {
+        SCRIPT_URL = savedUrl;
+        showMain();
+        fetchData();
+      }
+    };
+
+    function unlockSystem() {
+      const input = document.getElementById('secureUrlInput').value.trim();
+      if(input.includes("script.google.com")) {
+        localStorage.setItem('nguonSongUrl', input);
+        SCRIPT_URL = input;
+        document.getElementById('lockScreen').classList.add('hidden');
+        showMain();
+        fetchData();
+      } else {
+        alert("Invalid URL! / URL không hợp lệ!");
+      }
+    }
+
+    function showMain() {
+      const main = document.getElementById('mainContent');
+      main.classList.remove('opacity-0');
+    }
+
+    function logout() {
+      if(confirm("Disconnect this device? / Ngắt kết nối máy tính này?")) {
+        localStorage.removeItem('nguonSongUrl');
+        location.reload();
+      }
+    }
+
+    // TẤT CẢ CÁC HÀM FETCH DATA, SEND COMMAND, RENDER LIST... 
+    // Sẽ dùng biến SCRIPT_URL thay cho giá trị từ ô input cũ.
+    async function fetchData() {
+      if(!SCRIPT_URL) return;
+      const syncIcon = document.getElementById('syncIcon');
+      syncIcon.classList.add('loading-spinner');
+      try {
+        const response = await fetch(SCRIPT_URL);
+        masterData = await response.json();
+        renderList();
+      } catch (e) { console.error(e); }
+      finally { syncIcon.classList.remove('loading-spinner'); }
+    }
+    
+    // ... (Copy tiếp các hàm logic từ v37 sang đây) ...
+  </script>
+</body>
+</html>
