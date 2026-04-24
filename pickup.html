@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giao Nhận Trẻ - TV Display</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffb84d; }
+    .display-card { background: white; border-radius: 3rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); }
+    .status-badge { padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; }
+    .status-done { background: #dcfce7; color: #166534; }
+    .status-pending { background: #fee2e2; color: #991b1b; }
+    .pulse-ring { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-10">
+
+  <div class="max-w-4xl w-full">
+    <!-- Header -->
+    <div class="flex items-center gap-4 mb-8 text-white">
+      <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
+        <i class="fas fa-desktop text-2xl"></i>
+      </div>
+      <h1 class="text-3xl font-black uppercase tracking-tight">Giao Nhận Trẻ (TV Display)</h1>
+    </div>
+
+    <div class="display-card p-8 md:p-12">
+      <!-- Input Area -->
+      <div class="mb-10">
+        <label class="text-slate-400 font-bold uppercase text-xs tracking-widest ml-2 mb-3 block">Nhập mã số thẻ phụ huynh (Tìm nhanh)</label>
+        <div class="relative">
+          <input type="number" id="familySearch" oninput="searchFamily()" placeholder="VD: 101" 
+            class="w-full bg-slate-50 border-2 border-slate-100 rounded-[2rem] py-8 px-10 text-5xl font-black text-blue-600 outline-none focus:border-blue-400 transition-all placeholder:text-slate-200">
+          <div id="searchIcon" class="absolute right-8 top-1/2 -translate-y-1/2 text-slate-300 text-3xl">
+            <i class="fas fa-search"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Area -->
+      <div id="resultArea" class="min-h-[300px] border-4 border-dashed border-slate-50 rounded-[2.5rem] flex flex-col items-center justify-center p-8">
+        <div id="idleState" class="text-center">
+          <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-id-card text-blue-200 text-4xl"></i>
+          </div>
+          <p class="text-slate-300 font-bold text-xl uppercase tracking-widest">Chờ mã số...</p>
+        </div>
+
+        <div id="familyContent" class="hidden w-full">
+          <div class="flex justify-between items-end mb-6 border-b-4 border-blue-50 pb-4">
+            <div>
+              <h2 class="text-slate-400 font-black uppercase text-sm tracking-widest">Thông tin gia đình</h2>
+              <p class="text-5xl font-black text-slate-800">Mã #<span id="displayFamilyCode">---</span></p>
+            </div>
+            <div id="paymentWarning" class="hidden">
+               <span class="bg-red-500 text-white px-4 py-2 rounded-xl font-black text-xs animate-bounce italic">CHƯA ĐÓNG PHÍ!</span>
+            </div>
+          </div>
+
+          <div id="memberList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Members will be injected here -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <p class="text-center mt-8 text-blue-900/50 font-bold uppercase text-[10px] tracking-[0.3em]">Nguon Song OS - Child Safety Module</p>
+  </div>
+
+  <script>
+    let SCRIPT_URL = localStorage.getItem('nguonSongUrl');
+    let masterData = [];
+
+    // Tự động load dữ liệu mỗi 30 giây để cập nhật check-in mới
+    async function loadData() {
+      if(!SCRIPT_URL) {
+        alert("Vui lòng cấu hình URL hệ thống ở trang quản lý trước!");
+        return;
+      }
+      try {
+        const res = await fetch(SCRIPT_URL);
+        masterData = await res.json();
+      } catch(e) { console.error("Sync error"); }
+    }
+
+    setInterval(loadData, 30000);
+    loadData();
+
+    function searchFamily() {
+      const code = document.getElementById('familySearch').value;
+      const idle = document.getElementById('idleState');
+      const content = document.getElementById('familyContent');
+      const memberList = document.getElementById('memberList');
+      const warning = document.getElementById('paymentWarning');
+
+      if(!code || code.length < 2) {
+        idle.classList.remove('hidden');
+        content.classList.add('hidden');
+        return;
+      }
+
+      const members = masterData.filter(item => item['Family Code'] && item['Family Code'].toString() === code);
+
+      if(members.length > 0) {
+        idle.classList.add('hidden');
+        content.classList.remove('hidden');
+        document.getElementById('displayFamilyCode').innerText = code;
+        
+        // Kiểm tra xem cả nhà đã đóng tiền chưa
+        const hasPending = members.some(m => m.Payment !== 'Done' && !m.Payment.toString().toLowerCase().includes('free'));
+        warning.classList.toggle('hidden', !hasPending);
+
+        memberList.innerHTML = members.map(m => {
+          const isChild = m.Payment.toString().toLowerCase().includes('free') || m.Payment.toString().toLowerCase().includes('kid');
+          return `
+            <div class="bg-slate-50 p-6 rounded-3xl border-2 ${isChild ? 'border-blue-200 bg-blue-50/50' : 'border-slate-100'} flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 ${isChild ? 'bg-blue-500' : 'bg-slate-300'} text-white rounded-xl flex items-center justify-center font-black">
+                  ${isChild ? '<i class="fas fa-child"></i>' : m.Name.charAt(0)}
+                </div>
+                <div>
+                  <h4 class="font-black text-slate-800 uppercase ${isChild ? 'text-lg' : 'text-sm'}">${m.Name}</h4>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase">${isChild ? 'TRẺ EM' : 'PHỤ HUYNH'}</p>
+                </div>
+              </div>
+              <div>
+                 <span class="status-badge ${m.Payment === 'Done' || isChild ? 'status-done' : 'status-pending'}">
+                  ${m.Payment === 'Done' ? 'Đã đóng' : (isChild ? 'Miễn phí' : 'Chưa đóng')}
+                 </span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        idle.classList.remove('hidden');
+        content.classList.add('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
