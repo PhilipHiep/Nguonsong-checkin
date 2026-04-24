@@ -37,6 +37,9 @@
     <aside class="w-80 bg-white border-r p-6 flex flex-col gap-6 shadow-xl z-10">
       <h1 class="font-black text-xl text-blue-600 uppercase italic text-center">Hội Thánh Nguồn Sống Check-In System</h1>
       <div class="space-y-4 pt-4 border-t">
+        <p class="text-xs font-black text-slate-600 uppercase tracking-widest flex items-center gap-2 mb-2">
+          <i class="fas fa-user-plus text-blue-500"></i> Registration / Đăng ký
+        </p>
         <div class="space-y-1">
           <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Full Name / Họ và tên</label>
           <input type="text" id="newName" placeholder="Enter name..." class="w-full p-3 rounded-xl border text-sm outline-none bg-white transition-all">
@@ -64,6 +67,14 @@
         <button id="saveBtn" onclick="saveToGoogle()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-xs uppercase shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all mt-2">
           Save & Continue / Lưu & Tiếp tục
         </button>
+        <div class="mb-10">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Màu sắc bảng tên</p>
+          <div class="space-y-2">
+            <div class="p-3 tag-0-5 rounded-lg text-[10px] font-bold flex justify-between"><span>0-5 TUỔI</span><span class="text-blue-600">BLUE</span></div>
+            <div class="p-3 tag-5-7 rounded-lg text-[10px] font-bold flex justify-between"><span>5-7 TUỔI</span><span class="text-pink-600">PINK</span></div>
+            <div class="p-3 tag-7-11 rounded-lg text-[10px] font-bold flex justify-between"><span>7-11 TUỔI</span><span class="text-yellow-600">YELLOW</span></div>
+        </div>
+        </div>
         <button onclick="logout()" class="w-full text-blue-500 text-[9px] font-bold uppercase tracking-widest mt-10 hover:text-red-400">Disconnect System / Hủy Kết Nối Hệ Thống</button>
       </div>
     </aside>
@@ -280,21 +291,60 @@
     async function saveToGoogle() {
       const saveBtn = document.getElementById('saveBtn');
       if(isWorking || !SCRIPT_URL) return;
-      let payload = {
-        Name: document.getElementById('newName').value.trim(),
-        FamilyCode: document.getElementById('newCode').value.trim(),
-        Phone: document.getElementById('newPhone').value.trim(),
-        Payment: document.getElementById('newPayment').value
-      };
-      if(!payload.Name) return;
-      saveBtn.disabled = true;
+
+      const nameVal = document.getElementById('newName').value.trim();
+      const codeVal = document.getElementById('newCode').value.trim();
+      const phoneVal = document.getElementById('newPhone').value.trim();
+      const paymentVal = document.getElementById('newPayment').value;
+
+      // 1. Check Empty
+      if(!nameVal || !codeVal) {
+        alert("Please enter Name and Family Code!\nVui lòng nhập Tên và Mã gia đình!");
+        return;
+      }
+
+      // 2. Check Range (100-500)
+      const codeNum = parseInt(codeVal);
+      if(isNaN(codeNum) || codeNum < 100 || codeNum > 500) {
+        alert("Family Code must be between 100 and 500!\nMã gia đình phải từ 100 đến 500!");
+        return;
+      }
+
+      // 3. Check Duplicate Name
+      const isNameDup = masterData.some(i => i.Name && i.Name.toString().toLowerCase() === nameVal.toLowerCase());
+      if(isNameDup) {
+        alert("This Name already exists!\nTên này đã tồn tại trong hệ thống!");
+        return;
+      }
+
+      // 4. Check Duplicate Family Code (Warning only)
+      const isCodeDup = masterData.some(i => i['Family Code'] && i['Family Code'].toString() === codeVal);
+      if(isCodeDup) {
+        if(!confirm("Family Code already exists. Add new member to this family?\nMã gia đình đã tồn tại. Thêm thành viên mới vào gia đình này?")) return;
+      }
+
+      let payload = { Name: nameVal, FamilyCode: codeVal, Phone: phoneVal, Payment: paymentVal };
+      
+      isWorking = true; 
       saveBtn.classList.add('btn-processing');
-      saveBtn.innerHTML = '<i class="fas fa-spinner loading-spinner"></i> PROCESSING / ĐANG GHI NHẬN...';
+      saveBtn.innerHTML = "SAVING...";
+
       try {
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        document.getElementById('newName').value = ""; document.getElementById('newPhone').value = "";
-        setTimeout(async () => { await fetchData(); isWorking = false; saveBtn.classList.remove('btn-processing'); }, 1500);
-      } catch (e) { alert("Network Error / Lỗi kết nối!"); isWorking = false; saveBtn.classList.remove('btn-processing'); }
+        document.getElementById('newName').value = ""; 
+        document.getElementById('newPhone').value = "";
+        setTimeout(async () => { 
+          await fetchData(); 
+          isWorking = false; 
+          saveBtn.classList.remove('btn-processing'); 
+          saveBtn.innerHTML = "Save & Sync / Lưu dữ liệu";
+          document.getElementById('newName').focus();
+        }, 1500);
+      } catch (e) { 
+        alert("Error / Lỗi!"); 
+        isWorking = false; 
+        saveBtn.classList.remove('btn-processing'); 
+      }
     }
   </script>
 </body>
