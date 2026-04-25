@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nguồn Sống OS - Check-In System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; height: 100vh; overflow: hidden; }
+    .status-done { background: #22c55e; color: white; }
+    .status-pending { background: #ef4444; color: white; }
+    .status-free { background: #3b82f6; color: white; }
+    .tag-0-5 { background-color: #eff6ff !important; border-left: 6px solid #3b82f6 !important; }
+    .tag-5-7 { background-color: #fff1f2 !important; border-left: 6px solid #f43f5e !important; }
+    .tag-7-11 { background-color: #fefce8 !important; border-left: 6px solid #ffe065 !important; }
+    .tag-parent { background-color: #ffffff !important; border-left: 6px solid #cbd5e1 !important; }
+    .loading-spinner { animation: spin 1s linear infinite; }
+
+    /* CSS cho hiệu ứng Hover hiện nút Pay */
+    .pay-container .btn-pay-hover { display: none; }
+    .pay-container:hover .status-pending-label { display: none; }
+    .pay-container:hover .btn-pay-hover { display: block; }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    #resultList::-webkit-scrollbar { width: 6px; }
+    #resultList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .modal-overlay { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); }
+    .btn-processing { opacity: 0.5; pointer-events: none; }
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-80 bg-white border-r p-6 flex flex-col h-full shadow-xl z-10">
+    <h1 class="font-black text-xl text-blue-600 uppercase italic text-center mb-6">Nguồn Sống Check-In</h1>
+    <div class="flex-1 overflow-y-auto pr-2 space-y-4">
+      <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+        <i class="fas fa-user-plus text-blue-500"></i> Registration / Đăng ký
+      </p>
+      <div>
+        <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Full Name / Họ Tên</label>
+        <input type="text" id="newName" placeholder="Họ tên..." class="w-full p-3 rounded-xl border text-sm outline-none">
+      </div>
+      <div>
+      <div class="space-y-1">
+        <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Age / Tuổi</label>
+        <input type="number" id="newAge" placeholder="7" class="w-full p-3 rounded-xl border text-sm outline-none bg-yellow-50/30">
+      </div>
+        <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Family Code / Mã Gia Đình</label>
+        <input type="number" id="newCode" placeholder="101" class="w-full p-3 rounded-xl border-2 border-blue-100 text-sm font-bold outline-none">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Phone / Số Điện Thoại</label>
+        <input type="text" id="newPhone" placeholder="678..." class="w-full p-3 rounded-xl border text-sm outline-none">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Payment / Thanh Toán</label>
+        <select id="newPayment" class="w-full p-3 rounded-xl border text-sm outline-none">
+          <option value="Pending">Pending / Chưa đóng</option>
+          <option value="Done">Done / Đã đóng</option>
+          <option value="Free">Free / Miễn phí (KID / TRẺ EM)</option>
+        </select>
+      </div>
+      <button id="saveBtn" onclick="saveToGoogle()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-xs uppercase shadow-lg hover:bg-blue-700 transition-all">Save & Continue / Lưu & Tiếp Tục</button>
+    </div>
+    <button onclick="location.href='index.html'" class="mt-4 text-slate-400 text-[9px] font-bold uppercase text-center">Back to Portal</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 p-10 flex flex-col h-full overflow-hidden bg-slate-50">
+    <div class="max-w-4xl mx-auto w-full flex flex-col h-full">
+      <div class="flex gap-4 mb-6 shrink-0">
+        <div class="relative flex-1">
+          <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 text-xl"></i>
+          <input type="text" id="searchInput" onkeyup="renderList()" placeholder="Search Name or Family Code.../ Tìm Tên hoặc Mã Gia đình..." class="w-full pl-16 pr-6 py-5 bg-white shadow-xl rounded-2xl text-xl font-bold outline-none border-none focus:ring-4 focus:ring-blue-100 transition-all">
+        </div>
+        <button onclick="fetchData()" class="w-16 h-16 bg-white rounded-2xl shadow-lg text-blue-600 flex items-center justify-center shrink-0"><i class="fas fa-sync-alt text-xl" id="syncIcon"></i></button>
+      </div>
+      <div id="familyActionBox" class="hidden mb-4 shrink-0">
+         <button id="familyBtn" onclick="payFullFamily()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-sm shadow-xl">PAY FOR ENTIRE FAMILY / THANH TOÁN CHO CẢ GIA ĐÌNH</button>
+      </div>
+      <div id="resultList" class="flex-1 overflow-y-auto space-y-2 pr-2 pb-10"></div>
+    </div>
+  </main>
+
+  <!-- MODALS -->
+  <div id="statusModal" class="fixed inset-0 modal-overlay z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl text-center">
+      <h2 class="text-xl font-black text-slate-800 mb-2 uppercase italic">Update Status / Cập nhật</h2>
+      <p id="statusTargetName" class="text-blue-600 font-bold mb-6 border-b pb-2"></p>
+      <div class="space-y-3">
+        <button onclick="applyStatusFix('Pending')" class="w-full py-4 rounded-2xl bg-red-50 text-red-600 font-bold uppercase text-xs border border-red-100">Pending / Chưa Thanh Toán</button>
+        <button onclick="applyStatusFix('Done')" class="w-full py-4 rounded-2xl bg-green-50 text-green-600 font-bold uppercase text-xs border border-green-100">Done / Đã Thanh Toán</button>
+        <button onclick="applyStatusFix('Free')" class="w-full py-4 rounded-2xl bg-blue-50 text-blue-600 font-bold uppercase text-xs border border-blue-100">Free / Miễn Phí</button>
+        <button onclick="closeModals()" class="w-full py-3 mt-4 text-slate-400 font-bold uppercase text-[10px]">Cancel / Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="nameModal" class="fixed inset-0 modal-overlay z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl text-center">
+      <h2 class="text-xl font-black text-slate-800 mb-6 uppercase italic">Edit Name /Sửa Tên</h2>
+      <input type="text" id="editNameInput" class="w-full p-4 rounded-xl border-2 border-blue-100 outline-none font-bold text-lg mb-4">
+      <button onclick="applyNameFix()" class="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold uppercase text-xs shadow-lg">Update / Cập Nhật</button>
+      <button onclick="closeModals()" class="w-full py-3 mt-2 text-slate-400 font-bold uppercase text-[10px]">Cancel / Hủy</button>
+    </div>
+  </div>
+
+  <script>
+    let SCRIPT_URL = localStorage.getItem('nguonSongUrl');
+    let masterData = [];
+    let isWorking = false;
+    let currentFilteredFamilyCode = null;
+    let currentEditingName = null;
+
+    async function fetchData() {
+      if(!SCRIPT_URL) return;
+      document.getElementById('syncIcon').classList.add('loading-spinner');
+      try {
+        const res = await fetch(SCRIPT_URL);
+        masterData = await res.json();
+        renderList();
+      } catch (e) { console.error(e); }
+      finally { document.getElementById('syncIcon').classList.remove('loading-spinner'); }
+    }
+    window.onload = fetchData;
+
+    function sendCommand(params) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+        window[callbackName] = (data) => {
+          delete window[callbackName];
+          const s = document.getElementById(callbackName);
+          if(s) document.body.removeChild(s);
+          resolve(data);
+        };
+        const script = document.createElement('script');
+        script.id = callbackName;
+        let url = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + `callback=${callbackName}`;
+        for (let k in params) url += `&${k}=${encodeURIComponent(params[k])}`;
+        script.src = url;
+        script.onerror = () => reject("Connection Error");
+        document.body.appendChild(script);
+      });
+    }
+
+    function getAgeClass(age) {
+      if (!age) return "tag-parent";
+      const a = parseInt(age);
+      if (a < 5) return "tag-0-5";
+      if (a < 7) return "tag-5-7";
+      if (a <= 11) return "tag-7-11";
+      return "tag-parent";
+    }
+
+    function openStatusFix(name) { currentEditingName = name; document.getElementById('statusTargetName').innerText = name; document.getElementById('statusModal').classList.remove('hidden'); }
+    function openNameFix(name) { currentEditingName = name; document.getElementById('editNameInput').value = name; document.getElementById('nameModal').classList.remove('hidden'); }
+    function closeModals() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('nameModal').classList.add('hidden'); }
+
+    async function applyStatusFix(newStatus) {
+      closeModals(); isWorking = true;
+      try {
+        const res = await sendCommand({ action: 'UpdateSingle', name: currentEditingName, payment: newStatus });
+        if(res.status === 'success') await fetchData();
+      } catch (e) { alert("Lỗi kết nối!"); } finally { isWorking = false; }
+    }
+
+    async function applyNameFix() {
+      const newName = document.getElementById('editNameInput').value.trim();
+      if(!newName || newName === currentEditingName) return;
+      closeModals(); isWorking = true;
+      try {
+        const res = await sendCommand({ action: 'UpdateName', oldName: currentEditingName, newName: newName });
+        if(res.status === 'success') await fetchData();
+      } catch (e) { alert("Lỗi kết nối!"); } finally { isWorking = false; }
+    }
+
+    function renderList() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const list = document.getElementById('resultList');
+      const familyBox = document.getElementById('familyActionBox');
+      if(!query) { list.innerHTML = ""; familyBox.classList.add('hidden'); return; }
+
+      const filtered = masterData.filter(i => 
+        (i.Name && i.Name.toString().toLowerCase().includes(query)) || 
+        (i['Family Code'] && i['Family Code'].toString().includes(query))
+      );
+
+      const isFamilySearch = filtered.length > 1 && filtered.every(i => i['Family Code'] == filtered[0]['Family Code']);
+      familyBox.classList.toggle('hidden', !isFamilySearch);
+      if(isFamilySearch) currentFilteredFamilyCode = filtered[0]['Family Code'];
+
+      list.innerHTML = filtered.map((item, idx) => {
+        const ageClass = getAgeClass(item.Age);
+        const paymentStatus = (item.Payment || "").toString().toLowerCase();
+        const done = paymentStatus.includes('done');
+        const free = paymentStatus.includes('free');
+        const statusClass = done ? 'status-done' : (free ? 'status-free' : 'status-pending');
+
+        return `
+          <div class="p-3 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between transition-all ${ageClass}">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-white/60 text-blue-600 rounded-xl flex items-center justify-center font-black shadow-sm border border-white/40">${item.Name ? item.Name.toString().charAt(0) : '?'}</div>
+              <div>
+                <h3 class="font-black text-blue-600 uppercase text-lg leading-tight">
+                  ${item.Name} <i onclick="openNameFix('${item.Name}')" class="fas fa-pen text-[10px] text-slate-300 cursor-pointer ml-1"></i>
+                </h3>
+                <p class="text-[10px] font-extrabold text-black uppercase tracking-widest mt-0.5">#${item['Family Code']} | ${item.Age ? item.Age + ' TUỔI' : 'PHỤ HUYNH'}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 pay-container">
+                ${(!done && !free) ? `
+                  <div class="status-pending-label px-3 py-1 rounded-lg text-[10px] font-black uppercase shadow-sm ${statusClass}">PENDING / CHƯA TRẢ</div>
+                  <button id="btn-pay-${idx}" onclick="updateSinglePayment('${item.Name}', ${idx})" class="btn-pay-hover bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase shadow-lg hover:bg-blue-700 transition-all">PAY / THANH TOÁN</button>
+                ` : `
+                  <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase shadow-sm ${statusClass}">${free ? 'FREE / MIỄN PHÍ' : 'PAID / ĐÃ TRẢ'}</span>
+                `}
+                <i onclick="openStatusFix('${item.Name}')" class="fas fa-pen text-[10px] text-slate-300 cursor-pointer"></i>
+            </div>
+
+          </div>`;
+      }).join('');
+    }
+
+    async function updateSinglePayment(name, idx) {
+      if(isWorking) return;
+      if(confirm(`Paying for / Xác nhận thanh toán cho: ${name}?`)) {
+        isWorking = true;
+        const btn = document.getElementById('btn-pay-'+idx);
+        btn.innerHTML = '...';
+        try {
+          const res = await sendCommand({ action: 'UpdateSingle', name: name, payment: 'Done' });
+          if(res.status === 'success') await fetchData();
+        } catch (e) { alert("Lỗi kết nối!"); } finally { isWorking = false; }
+      }
+    }
+
+    async function payFullFamily() {
+      if(isWorking) return;
+      if(confirm(`Thanh toán cho cả gia đình #${currentFilteredFamilyCode}?`)) {
+        isWorking = true;
+        try {
+          const res = await sendCommand({ action: 'UpdateFamily', familyCode: currentFilteredFamilyCode });
+          if(res.status === 'success') await fetchData();
+        } catch (e) { alert("Lỗi kết nối!"); } finally { isWorking = false; }
+      }
+    }
+    
+    async function saveToGoogle() {
+      if (isWorking || !SCRIPT_URL) return;
+
+      const nameVal = document.getElementById('newName').value.trim();
+      const ageVal = document.getElementById('newAge').value.trim();
+      const codeVal = document.getElementById('newCode').value.trim();
+      const phoneVal = document.getElementById('newPhone').value.trim();
+      const paymentVal = document.getElementById('newPayment').value;
+
+      // --- LOGIC TỪ BẢN OLD ---
+      // 1. Kiểm tra trống
+      if (!nameVal || !codeVal) {
+        alert("Please enter Name and Family Code!\nVui lòng nhập Tên và Mã gia đình!");
+        return;
+      }
+
+      // 2. Kiểm tra khoảng mã (100-500)
+      const codeNum = parseInt(codeVal);
+      if (isNaN(codeNum) || codeNum < 100 || codeNum > 500) {
+        alert("Family Code must be between 100 and 500!\nMã gia đình phải từ 100 đến 500!");
+        return;
+      }
+
+      // 3. Kiểm tra trùng tên (Tránh lưu đè)
+      const isNameDup = masterData.some(i => i.Name && i.Name.toString().toLowerCase() === nameVal.toLowerCase());
+      if (isNameDup) {
+        alert("This Name already exists!\nTên này đã tồn tại trong hệ thống!");
+        return;
+      }
+
+      // 4. Cảnh báo trùng mã gia đình (Nhưng vẫn cho phép lưu nếu xác nhận)
+      const isCodeDup = masterData.some(i => i['Family Code'] && i['Family Code'].toString() === codeVal);
+      if (isCodeDup) {
+        if (!confirm("Family Code already exists. Add new member to this family?\nMã gia đình đã tồn tại. Thêm thành viên mới vào nhà này?")) return;
+      }
+      // ------------------------
+
+      isWorking = true;
+      const saveBtn = document.getElementById('saveBtn');
+      saveBtn.classList.add('btn-processing');
+      saveBtn.innerHTML = "SAVING... / ĐANG LƯU...";
+
+      let payload = { 
+        Name: nameVal, 
+        Age: ageVal, 
+        FamilyCode: codeVal, 
+        Phone: phoneVal, 
+        Payment: paymentVal 
+      };
+
+      try {
+        await fetch(SCRIPT_URL, { 
+          method: 'POST', 
+          mode: 'no-cors', 
+          body: JSON.stringify(payload) 
+        });
+
+        // Reset form
+        document.getElementById('newName').value = "";
+        document.getElementById('newAge').value = "";
+        document.getElementById('newPhone').value = "";
+        
+        setTimeout(async () => {
+          await fetchData(); // Tải lại dữ liệu mới nhất
+          isWorking = false;
+          saveBtn.classList.remove('btn-processing');
+          saveBtn.innerHTML = "Save & Continue / Lưu & Tiếp tục";
+          document.getElementById('newName').focus(); // Tự động nhảy vào ô tên để nhập tiếp
+        }, 1500);
+
+      } catch (e) {
+        alert("Connection Error / Lỗi kết nối!");
+        isWorking = false;
+        saveBtn.classList.remove('btn-processing');
+        saveBtn.innerHTML = "Save & Continue / Lưu & Tiếp tục";
+      }
+    }
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Nguồn Sống OS - Pickup System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: #1e40af; 
+      height: 100vh; 
+      overflow: hidden; 
+    }
+    .display-card { 
+      background: white; 
+      border-radius: 2rem; 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 100px);
+    }
+    
+    .status-badge { padding: 0.3rem 0.7rem; border-radius: 0.7rem; font-weight: 900; font-size: 0.65rem; text-transform: uppercase; border: 1px solid rgba(0,0,0,0.1); }
+    .status-done { background: #22c55e; color: white; }
+    .status-pending { background: #ef4444; color: white; }
+
+    /* MÀU NỀN THEO ĐỘ TUỔI */
+    /* 0-5 Tuổi: Blue rực rỡ */
+    .age-blue { background-color: #2563eb !important; color: white !important; }
+    .age-blue h4 { color: white !important; }
+    .age-blue p { color: rgba(255,255,255,0.8) !important; }
+    
+    /* 5-7 Tuổi: Pink rực rỡ */
+    .age-pink { background-color: #db2777 !important; color: white !important; }
+    .age-pink h4 { color: white !important; }
+    .age-pink p { color: rgba(255,255,255,0.8) !important; }
+    
+    /* 7-11 Tuổi: YELLOW SÁNG (Màu vàng chanh/vàng tươi) */
+    .age-yellow { background-color: #ffe065 !important; color: #422006 !important; }
+    .age-yellow h4 { color: #422006 !important; }
+    .age-yellow p { color: rgba(66,32,6,0.7) !important; }
+    
+    /* Phụ huynh: Xám nhẹ chuyên nghiệp */
+    .age-parent { background-color: #f1f5f9 !important; color: #1e293b !important; border: 1px solid #e2e8f0; }
+
+    #memberList::-webkit-scrollbar { width: 5px; }
+    #memberList::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+  </style>
+</head>
+<body class="flex items-center justify-center p-4">
+  <div class="max-w-6xl w-full h-full flex flex-col">
+    
+    <div class="flex justify-between items-center mb-3">
+      <div class="flex items-center gap-3 text-white">
+        <div class="bg-white/20 p-3 rounded-xl backdrop-blur-md"><i class="fas fa-desktop text-xl text-white"></i></div>
+        <h1 class="text-xl font-black uppercase tracking-tight leading-none text-white">Pickup System <br><span class="text-[8px] opacity-80 tracking-[0.2em]">Giao nhận trẻ</span></h1>
+      </div>
+      <a href="index.html" class="bg-white text-blue-700 px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-lg hover:bg-blue-50 transition-all italic">
+        <i class="fas fa-arrow-left mr-1"></i> Back
+      </a>
+    </div>
+
+    <div class="display-card p-6 flex-1 overflow-hidden">
+      <div class="mb-4">
+        <label class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] ml-2 mb-1 block italic">Enter Family Code / Nhập mã số thẻ</label>
+        <input type="number" id="familySearch" oninput="searchFamily()" placeholder="101" 
+          class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl py-3 px-6 text-4xl font-black text-blue-600 outline-none focus:border-blue-500 transition-all">
+      </div>
+
+      <div id="resultArea" class="flex-1 border-2 border-dashed border-slate-100 rounded-[1.5rem] flex flex-col overflow-hidden relative">
+        <div id="idleState" class="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+          <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-2"><i class="fas fa-search text-blue-200 text-xl"></i></div>
+          <p class="text-slate-300 font-bold text-[10px] uppercase tracking-widest">Waiting for code...</p>
+        </div>
+
+        <div id="familyContent" class="hidden h-full flex flex-col p-4">
+          <div class="flex justify-between items-center mb-4 border-b-2 border-blue-50 pb-4 shrink-0">
+            <div>
+              <h2 class="text-slate-400 font-black uppercase text-[9px] tracking-widest leading-none">Family Info</h2>
+              <p class="text-5xl font-black text-slate-800 leading-none mt-1">#<span id="displayFamilyCode">---</span></p>
+            </div>
+            <div id="paymentWarning" class="hidden">
+               <span class="bg-red-600 text-white px-5 py-2 rounded-xl font-black text-[11px] animate-bounce shadow-lg inline-block border-2 border-white">UNPAID / CHƯA ĐÓNG PHÍ!</span>
+            </div>
+          </div>
+
+          <div id="memberList" class="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let SCRIPT_URL = localStorage.getItem('nguonSongUrl');
+    let masterData = [];
+
+    async function loadData() {
+      if(!SCRIPT_URL) return;
+      try {
+        const res = await fetch(SCRIPT_URL);
+        masterData = await res.json();
+        searchFamily(); 
+      } catch(e) {}
+    }
+    setInterval(loadData, 20000);
+    loadData();
+
+    function getAgeClass(age) {
+      if (!age || age === "") return "age-parent";
+      const a = parseInt(age);
+      if (a >= 0 && a < 5) return "age-blue";
+      if (a >= 5 && a < 7) return "age-pink";
+      if (a >= 7 && a <= 11) return "age-yellow";
+      return "age-parent";
+    }
+
+    function searchFamily() {
+      const code = document.getElementById('familySearch').value;
+      const idle = document.getElementById('idleState');
+      const content = document.getElementById('familyContent');
+      const memberList = document.getElementById('memberList');
+      const warning = document.getElementById('paymentWarning');
+
+      if(!code) { idle.classList.remove('hidden'); content.classList.add('hidden'); return; }
+
+      const members = masterData.filter(item => item['Family Code'] && item['Family Code'].toString() === code);
+
+      if(members.length > 0) {
+        idle.classList.add('hidden'); content.classList.remove('hidden');
+        document.getElementById('displayFamilyCode').innerText = code;
+        
+        const hasPending = members.some(m => m.Payment !== 'Done' && !m.Payment.toString().toLowerCase().includes('free'));
+        warning.classList.toggle('hidden', !hasPending);
+
+        memberList.innerHTML = members.map(m => {
+          const age = m.Age || "";
+          const isChild = age !== "";
+          const ageClass = getAgeClass(age);
+          
+          return `
+            <div class="p-4 rounded-2xl shadow-md flex items-center justify-between transition-all ${ageClass}">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 shrink-0 bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center font-black text-inherit text-xl border border-white/40">
+                  ${isChild ? '<i class="fas fa-child"></i>' : m.Name.charAt(0)}
+                </div>
+                <div class="min-w-0">
+                  <h4 class="font-black uppercase truncate text-[16px] tracking-tight">${m.Name}</h4>
+                  <p class="text-[9px] font-bold uppercase tracking-[0.1em]">
+                    ${isChild ? age + ' TUỔI / AGE' : 'PARENT / PHỤ HUYNH'}
+                  </p>
+                </div>
+              </div>
+              <span class="status-badge shrink-0 ${m.Payment === 'Done' || m.Payment === 'Free' ? 'status-done' : 'status-pending'}">
+                ${m.Payment === 'Done' ? 'PAID' : (m.Payment === 'Free' ? 'FREE / MIỄN PHÍ' : 'UNPAID / CHƯA THANH TOÁN')}
+              </span>
+            </div>
+          `;
+        }).join('');
+      } else { idle.classList.remove('hidden'); content.classList.add('hidden'); }
+    }
+  </script>
+</body>
+</html>
