@@ -460,19 +460,30 @@
   <script>
     let SCRIPT_URL = localStorage.getItem('nguonSongUrl');
     let masterData = [];
+    let dataLoadingPromise = null;
     let isWorking = false;
     let currentFilteredFamilyCode = null;
     let currentEditingName = null;
 
     async function fetchData() {
-      if(!SCRIPT_URL) return;
+      if(!SCRIPT_URL) {
+        window.location.href = 'index.html';
+        return;
+      }
+      if (dataLoadingPromise) return dataLoadingPromise;
       document.getElementById('syncIcon').classList.add('loading-spinner');
-      try {
-        const res = await fetch(SCRIPT_URL);
-        masterData = await res.json();
-        renderList();
-      } catch (e) { console.error(e); }
-      finally { document.getElementById('syncIcon').classList.remove('loading-spinner'); }
+      dataLoadingPromise = (async () => {
+        try {
+          const res = await fetch(SCRIPT_URL);
+          masterData = await res.json();
+          renderList();
+        } catch (e) { console.error(e); }
+        finally {
+          document.getElementById('syncIcon').classList.remove('loading-spinner');
+          dataLoadingPromise = null;
+        }
+      })();
+      return dataLoadingPromise;
     }
     window.onload = fetchData;
 
@@ -522,11 +533,11 @@
     async function runSearchFromInput() {
       const input = document.getElementById('searchInput');
       const query = input.value.trim();
-      renderList();
       input.blur();
       if (query && (!Array.isArray(masterData) || masterData.length === 0)) {
         await fetchData();
       }
+      renderList();
     }
 
     async function applyStatusFix(newStatus) {

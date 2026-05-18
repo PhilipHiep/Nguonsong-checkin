@@ -175,7 +175,7 @@
     <div class="display-card p-6 flex-1 overflow-hidden">
       <div id="familySearchDock" class="mb-4">
         <label class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] ml-2 mb-1 block italic">Enter Family Code / Nhập mã số thẻ</label>
-        <input type="search" id="familySearch" inputmode="numeric" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="searchFamily()" onkeydown="handleFamilySearchKey(event)" onsearch="runFamilySearchFromInput()" placeholder="101" 
+        <input type="search" id="familySearch" inputmode="numeric" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="searchFamily()" onkeydown="handleFamilySearchKey(event)" onsearch="runFamilySearchFromInput()" placeholder="101"
           class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl py-3 px-6 text-3xl sm:text-4xl font-black text-blue-600 outline-none focus:border-blue-500 transition-all">
       </div>
 
@@ -205,14 +205,23 @@
   <script>
     let SCRIPT_URL = localStorage.getItem('nguonSongUrl');
     let masterData = [];
+    let dataLoadingPromise = null;
 
     async function loadData() {
-      if(!SCRIPT_URL) return;
-      try {
-        const res = await fetch(SCRIPT_URL);
-        masterData = await res.json();
-        searchFamily(); 
-      } catch(e) {}
+      if(!SCRIPT_URL) {
+        window.location.href = 'index.html';
+        return;
+      }
+      if (dataLoadingPromise) return dataLoadingPromise;
+      dataLoadingPromise = (async () => {
+        try {
+          const res = await fetch(SCRIPT_URL);
+          masterData = await res.json();
+          searchFamily();
+        } catch(e) {}
+        finally { dataLoadingPromise = null; }
+      })();
+      return dataLoadingPromise;
     }
     setInterval(loadData, 20000);
     loadData();
@@ -235,11 +244,11 @@
     async function runFamilySearchFromInput() {
       const input = document.getElementById('familySearch');
       const code = input.value.trim();
-      searchFamily();
       input.blur();
       if (code && (!Array.isArray(masterData) || masterData.length === 0)) {
         await loadData();
       }
+      searchFamily();
     }
 
     function searchFamily() {
