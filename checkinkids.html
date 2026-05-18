@@ -2,16 +2,18 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nguồn Sống OS - Pickup System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    * { box-sizing: border-box; }
     body { 
       font-family: 'Plus Jakarta Sans', sans-serif; 
       background-color: #1e40af; 
-      height: 100vh; 
+      height: 100vh;
+      height: 100dvh;
       overflow: hidden; 
     }
     .display-card { 
@@ -48,12 +50,119 @@
 
     #memberList::-webkit-scrollbar { width: 5px; }
     #memberList::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+    @media (max-width: 1023px) {
+      body {
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: auto;
+        align-items: flex-start !important;
+      }
+
+      .display-card {
+        max-height: none;
+        min-height: calc(100vh - 6rem);
+        min-height: calc(100dvh - 6rem);
+      }
+
+      #memberList {
+        overflow: visible !important;
+      }
+    }
+
+    @media (max-width: 767px) {
+      body {
+        padding: 0.75rem !important;
+        padding-bottom: 7rem !important;
+      }
+
+      .display-card {
+        border-radius: 1.25rem;
+        padding: 1rem !important;
+        padding-bottom: 7.5rem !important;
+      }
+
+      #familySearchDock {
+        background: rgba(30, 64, 175, 0.94);
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        bottom: 0;
+        box-shadow: 0 -18px 40px -26px rgba(15, 23, 42, 0.75);
+        left: 0;
+        margin: 0 !important;
+        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+        position: fixed;
+        right: 0;
+        z-index: 60;
+      }
+
+      #familySearchDock label {
+        color: rgba(255, 255, 255, 0.8) !important;
+      }
+
+      #familySearch {
+        font-size: 2rem !important;
+        padding: 0.85rem 1rem !important;
+      }
+
+      #familyContent {
+        padding: 0.75rem !important;
+      }
+
+      #familyContent > div:first-child {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      #familyContent > div:first-child p {
+        font-size: 2.75rem !important;
+      }
+
+      #paymentWarning span {
+        animation: none;
+        white-space: normal;
+        line-height: 1.25;
+      }
+
+      #memberList > div {
+        align-items: stretch !important;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      #memberList > div > div:first-child {
+        min-width: 0;
+      }
+
+      #memberList h4 {
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .status-badge {
+        align-self: flex-start;
+        max-width: 100%;
+        line-height: 1.25;
+        white-space: normal;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+      body {
+        padding: 1rem !important;
+      }
+
+      .display-card {
+        padding: 1.25rem !important;
+      }
+    }
   </style>
 </head>
 <body class="flex items-center justify-center p-4">
   <div class="max-w-6xl w-full h-full flex flex-col">
     
-    <div class="flex justify-between items-center mb-3">
+    <div class="flex justify-between items-center gap-3 mb-3">
       <div class="flex items-center gap-3 text-white">
         <div class="bg-white/20 p-3 rounded-xl backdrop-blur-md"><i class="fas fa-desktop text-xl text-white"></i></div>
         <h1 class="text-xl font-black uppercase tracking-tight leading-none text-white">Pickup System <br><span class="text-[8px] opacity-80 tracking-[0.2em]">Giao nhận trẻ</span></h1>
@@ -64,10 +173,10 @@
     </div>
 
     <div class="display-card p-6 flex-1 overflow-hidden">
-      <div class="mb-4">
+      <div id="familySearchDock" class="mb-4">
         <label class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] ml-2 mb-1 block italic">Enter Family Code / Nhập mã số thẻ</label>
         <input type="number" id="familySearch" oninput="searchFamily()" placeholder="101" 
-          class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl py-3 px-6 text-4xl font-black text-blue-600 outline-none focus:border-blue-500 transition-all">
+          class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl py-3 px-6 text-3xl sm:text-4xl font-black text-blue-600 outline-none focus:border-blue-500 transition-all">
       </div>
 
       <div id="resultArea" class="flex-1 border-2 border-dashed border-slate-100 rounded-[1.5rem] flex flex-col overflow-hidden relative">
@@ -132,13 +241,17 @@
         idle.classList.add('hidden'); content.classList.remove('hidden');
         document.getElementById('displayFamilyCode').innerText = code;
         
-        const hasPending = members.some(m => m.Payment !== 'Done' && !m.Payment.toString().toLowerCase().includes('free'));
+        const hasPending = members.some(m => {
+          const payment = (m.Payment || "").toString();
+          return payment !== 'Done' && !payment.toLowerCase().includes('free');
+        });
         warning.classList.toggle('hidden', !hasPending);
 
         memberList.innerHTML = members.map(m => {
-          const age = m.Age || "";
+          const age = (m.Age ?? "").toString().trim();
           const isChild = age !== "";
           const ageClass = getAgeClass(age);
+          const payment = (m.Payment || "").toString();
           
           return `
             <div class="p-4 rounded-2xl shadow-md flex items-center justify-between transition-all ${ageClass}">
@@ -148,13 +261,11 @@
                 </div>
                 <div class="min-w-0">
                   <h4 class="font-black uppercase truncate text-[16px] tracking-tight">${m.Name}</h4>
-                  <p class="text-[9px] font-bold uppercase tracking-[0.1em]">
-                    ${isChild ? age + ' TUỔI / AGE' : 'PARENT / PHỤ HUYNH'}
-                  </p>
+                  ${isChild ? `<p class="text-[9px] font-bold uppercase tracking-[0.1em]">${age} TUỔI</p>` : ''}
                 </div>
               </div>
-              <span class="status-badge shrink-0 ${m.Payment === 'Done' || m.Payment === 'Free' ? 'status-done' : 'status-pending'}">
-                ${m.Payment === 'Done' ? 'PAID' : (m.Payment === 'Free' ? 'FREE / MIỄN PHÍ' : 'UNPAID / CHƯA THANH TOÁN')}
+              <span class="status-badge shrink-0 ${payment === 'Done' || payment === 'Free' ? 'status-done' : 'status-pending'}">
+                ${payment === 'Done' ? 'PAID' : (payment === 'Free' ? 'FREE / MIỄN PHÍ' : 'UNPAID / CHƯA THANH TOÁN')}
               </span>
             </div>
           `;
