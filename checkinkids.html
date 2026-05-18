@@ -207,6 +207,43 @@
     let masterData = [];
     let dataLoadingPromise = null;
 
+    function jsonpRequest(params = {}) {
+      return new Promise((resolve, reject) => {
+        if (!SCRIPT_URL) {
+          reject("Missing Script URL");
+          return;
+        }
+
+        const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.round(100000 * Math.random());
+        const script = document.createElement('script');
+        const cleanup = () => {
+          delete window[callbackName];
+          const s = document.getElementById(callbackName);
+          if (s) document.body.removeChild(s);
+          clearTimeout(timeoutId);
+        };
+        const timeoutId = setTimeout(() => {
+          cleanup();
+          reject("Connection Timeout");
+        }, 15000);
+
+        window[callbackName] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+
+        script.id = callbackName;
+        let url = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + `callback=${callbackName}`;
+        for (let k in params) url += `&${k}=${encodeURIComponent(params[k])}`;
+        script.src = url;
+        script.onerror = () => {
+          cleanup();
+          reject("Connection Error");
+        };
+        document.body.appendChild(script);
+      });
+    }
+
     async function loadData() {
       if(!SCRIPT_URL) {
         window.location.href = 'index.html';
@@ -215,8 +252,7 @@
       if (dataLoadingPromise) return dataLoadingPromise;
       dataLoadingPromise = (async () => {
         try {
-          const res = await fetch(SCRIPT_URL);
-          masterData = await res.json();
+          masterData = await jsonpRequest();
           searchFamily();
         } catch(e) {}
         finally { dataLoadingPromise = null; }
