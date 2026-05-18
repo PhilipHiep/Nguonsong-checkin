@@ -8,8 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
-    * { box-sizing: border-box; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; height: 100vh; height: 100dvh; overflow: hidden; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; height: 100vh; overflow: hidden; }
     .status-done { background: #22c55e; color: white; }
     .status-pending { background: #ef4444; color: white; }
     .status-free { background: #3b82f6; color: white; }
@@ -29,348 +28,13 @@
     #resultList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     .modal-overlay { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); }
     .btn-processing { opacity: 0.5; pointer-events: none; }
-    #familyBtn span {
-      display: block;
-      line-height: 1.25;
-    }
-    #registrationFab,
-    #registrationBackdrop,
-    #mobileHeader,
-    #mobileBackBtn,
-    #closeRegistrationBtn {
-      display: none;
-    }
-    .field-pair {
-      display: block;
-    }
-    .field-pair > div { min-width: 0; }
-    .field-pair > div + div { margin-top: 1rem; }
-
-    @media (hover: none), (pointer: coarse) {
-      .pay-container .status-pending-label { display: none; }
-      .pay-container .btn-pay-hover { display: block; }
-    }
-
-    @media (max-width: 1024px) {
-      body {
-        height: auto;
-        min-height: 100vh;
-        min-height: 100dvh;
-        overflow: auto;
-      }
-
-      body.flex { flex-direction: column; }
-
-      aside {
-        width: 100% !important;
-        height: auto !important;
-        border-right: 0 !important;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 1rem !important;
-        box-shadow: 0 12px 30px -24px rgba(15, 23, 42, 0.35) !important;
-      }
-
-      aside h1 { margin-bottom: 1rem !important; }
-
-      aside .flex-1 {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.75rem;
-        overflow: visible !important;
-        padding-right: 0 !important;
-      }
-
-      aside .flex-1 > p,
-      aside .flex-1 > .field-pair,
-      aside .flex-1 > button {
-        grid-column: 1 / -1;
-      }
-
-      aside input,
-      aside select {
-        min-height: 44px;
-      }
-
-      main {
-        height: auto !important;
-        min-height: 0;
-        overflow: visible !important;
-        padding: 1rem !important;
-      }
-
-      main > div {
-        height: auto !important;
-        max-width: none !important;
-      }
-
-      #resultList {
-        overflow: visible !important;
-        padding-right: 0 !important;
-        padding-bottom: 1rem !important;
-      }
-    }
-
-    @media (min-width: 768px) and (max-width: 1023px) {
-      aside .flex-1 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .field-pair {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 0.75rem;
-      }
-
-      .field-pair > div + div { margin-top: 0; }
-    }
-
-    @media (max-width: 1024px) {
-      body {
-        padding-bottom: 7rem;
-      }
-
-      aside {
-        border: 0 !important;
-        border-radius: 1.75rem;
-        bottom: 1rem;
-        box-shadow: 0 30px 80px -20px rgba(15, 23, 42, 0.45) !important;
-        display: none !important;
-        left: 1rem;
-        max-height: calc(100dvh - 2rem);
-        overflow: hidden;
-        position: fixed !important;
-        right: 1rem;
-        top: 1rem;
-        width: auto !important;
-        z-index: 80 !important;
-      }
-
-      body.registration-open aside {
-        display: flex !important;
-      }
-
-      aside h1 {
-        padding-right: 3rem;
-      }
-
-      #closeRegistrationBtn {
-        align-items: center;
-        background: #eff6ff;
-        border-radius: 999px;
-        color: #2563eb;
-        display: flex;
-        height: 2.5rem;
-        justify-content: center;
-        position: absolute;
-        right: 1rem;
-        top: 1rem;
-        width: 2.5rem;
-        z-index: 90;
-      }
-
-      #registrationBackdrop {
-        background: rgba(15, 23, 42, 0.55);
-        backdrop-filter: blur(4px);
-        display: none;
-        inset: 0;
-        position: fixed;
-        z-index: 70;
-      }
-
-      body.registration-open #registrationBackdrop {
-        display: block;
-      }
-
-      #registrationFab {
-        align-items: center;
-        background: #2563eb;
-        border-radius: 999px;
-        bottom: 7.25rem;
-        box-shadow: 0 18px 40px -14px rgba(37, 99, 235, 0.65);
-        color: white;
-        display: flex;
-        font-size: 1.25rem;
-        height: 3.75rem;
-        justify-content: center;
-        position: fixed;
-        right: 1rem;
-        touch-action: none;
-        width: 3.75rem;
-        z-index: 65;
-      }
-
-      #mobileHeader {
-        display: block;
-        padding: 2.75rem 0 1.25rem;
-        text-align: center;
-      }
-
-      #mobileBackBtn {
-        align-items: center;
-        background: white;
-        border-radius: 999px;
-        box-shadow: 0 14px 30px -18px rgba(15, 23, 42, 0.45);
-        color: #2563eb;
-        display: flex;
-        font-size: 0.7rem;
-        font-style: italic;
-        font-weight: 900;
-        gap: 0.35rem;
-        left: 1rem;
-        padding: 0.65rem 0.85rem;
-        position: fixed;
-        text-transform: uppercase;
-        top: 1rem;
-        z-index: 55;
-      }
-
-      #mobileHeader h1 {
-        color: #2563eb;
-        font-size: 1.25rem;
-        font-style: italic;
-        font-weight: 900;
-        letter-spacing: -0.02em;
-        line-height: 1.08;
-        text-transform: none;
-        white-space: nowrap;
-      }
-
-      #mobileHeader p {
-        color: #64748b;
-        font-size: 0.7rem;
-        font-weight: 900;
-        letter-spacing: 0.08em;
-        line-height: 1.2;
-        margin-top: 0.35rem;
-        text-transform: none;
-        white-space: nowrap;
-      }
-
-      #registrationFab.dragging {
-        transition: none;
-      }
-
-      aside .flex-1 {
-        grid-template-columns: 1fr;
-        overflow-y: auto !important;
-        padding-right: 0.25rem !important;
-      }
-
-      #searchInput {
-        font-size: 1rem !important;
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
-        padding-left: 3.25rem !important;
-      }
-
-      main {
-        padding-bottom: 7.25rem !important;
-      }
-
-      #searchDock {
-        background: rgba(248, 250, 252, 0.92);
-        border-top: 1px solid #e2e8f0;
-        bottom: 0;
-        box-shadow: 0 -18px 40px -28px rgba(15, 23, 42, 0.55);
-        flex-direction: row !important;
-        gap: 0.6rem !important;
-        left: 0;
-        margin-bottom: 0 !important;
-        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
-        position: fixed;
-        right: 0;
-        z-index: 60;
-      }
-
-      #searchDock > button {
-        height: 3.5rem !important;
-        width: 3.5rem !important;
-      }
-
-      #resultList > div {
-        align-items: stretch !important;
-        flex-direction: column;
-        gap: 0.75rem;
-        position: relative;
-      }
-
-      #resultList > div > div:first-child {
-        min-width: 0;
-        padding-right: 8.75rem;
-        width: 100%;
-      }
-
-      #resultList h3 {
-        font-size: 1rem !important;
-        overflow-wrap: anywhere;
-      }
-
-      #resultList .pay-container {
-        justify-content: flex-end;
-        max-width: 8.5rem;
-        position: absolute;
-        right: 1rem;
-        top: 1rem;
-        width: auto;
-      }
-
-      #resultList .pay-container .status-pending-label {
-        display: block;
-      }
-
-      #resultList .pay-container .btn-pay-hover {
-        display: none;
-      }
-
-      #resultList .pay-container span,
-      #resultList .pay-container .status-pending-label,
-      #resultList .pay-container button {
-        font-size: 9px !important;
-        line-height: 1.1;
-        white-space: nowrap;
-      }
-
-      #familyBtn {
-        white-space: normal;
-        line-height: 1.35;
-      }
-
-      .field-pair {
-        display: block;
-      }
-
-      .field-pair label {
-        font-size: 9px !important;
-      }
-    }
-
-    @media (min-width: 1025px) and (max-width: 1180px) {
-      aside {
-        width: 18rem !important;
-        padding: 1.25rem !important;
-      }
-
-      main {
-        padding: 1.5rem !important;
-      }
-    }
   </style>
 </head>
 <body class="flex min-h-screen">
-  <a id="mobileBackBtn" href="index.html">
-    <i class="fas fa-arrow-left"></i>
-    <span>Back</span>
-  </a>
 
   <!-- SIDEBAR -->
   <aside class="w-80 bg-white border-r p-6 flex flex-col h-full shadow-xl z-10">
-    <button id="closeRegistrationBtn" onclick="closeRegistrationPanel()" aria-label="Close registration">
-      <i class="fas fa-times"></i>
-    </button>
-    <h1 class="font-black text-blue-600 italic text-center mb-6 leading-tight">
-      <span class="block text-xl">Hội Thánh Nguồn Sống</span>
-      <span class="block text-[11px] not-italic text-slate-500 tracking-[0.08em] mt-1">Hệ Thống Đăng Ký - Check In</span>
-    </h1>
+    <h1 class="font-black text-xl text-blue-600 uppercase italic text-center mb-6">Nguồn Sống Check-In</h1>
     <div class="flex-1 overflow-y-auto pr-2 space-y-4">
       <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
         <i class="fas fa-user-plus text-blue-500"></i> Registration / Đăng ký
@@ -380,55 +44,42 @@
         <input type="text" id="newName" placeholder="Họ tên..." class="w-full p-3 rounded-xl border text-sm outline-none">
       </div>
       <div>
+      <div class="space-y-1">
         <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Age / Tuổi</label>
         <input type="number" id="newAge" placeholder="7" class="w-full p-3 rounded-xl border text-sm outline-none bg-yellow-50/30">
+      </div>
+        <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Family Code / Mã Gia Đình</label>
+        <input type="number" id="newCode" placeholder="101" class="w-full p-3 rounded-xl border-2 border-blue-100 text-sm font-bold outline-none">
       </div>
       <div>
         <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Phone / Số Điện Thoại</label>
         <input type="text" id="newPhone" placeholder="678..." class="w-full p-3 rounded-xl border text-sm outline-none">
       </div>
-      <div class="field-pair">
-        <div>
-          <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Family Code / Mã Gia Đình</label>
-          <input type="number" id="newCode" placeholder="101" class="w-full p-3 rounded-xl border-2 border-blue-100 text-sm font-bold outline-none">
-        </div>
-        <div>
-          <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Payment / Thanh Toán</label>
-          <select id="newPayment" class="w-full p-3 rounded-xl border text-sm outline-none">
-            <option value="Pending">Pending / Chưa đóng</option>
-            <option value="Done">Done / Đã đóng</option>
-            <option value="Free">Free / Miễn phí (KID / TRẺ EM)</option>
-          </select>
-        </div>
+      <div>
+        <label class="text-[10px] font-bold text-blue-500 uppercase ml-1">Payment / Thanh Toán</label>
+        <select id="newPayment" class="w-full p-3 rounded-xl border text-sm outline-none">
+          <option value="Pending">Pending / Chưa đóng</option>
+          <option value="Done">Done / Đã đóng</option>
+          <option value="Free">Free / Miễn phí (KID / TRẺ EM)</option>
+        </select>
       </div>
       <button id="saveBtn" onclick="saveToGoogle()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-xs uppercase shadow-lg hover:bg-blue-700 transition-all">Save & Continue / Lưu & Tiếp Tục</button>
     </div>
     <button onclick="location.href='index.html'" class="mt-4 text-slate-400 text-[9px] font-bold uppercase text-center">Back to Portal</button>
   </aside>
-  <div id="registrationBackdrop" onclick="closeRegistrationPanel()"></div>
-  <button id="registrationFab" type="button" aria-label="Open registration">
-    <i class="fas fa-user-plus"></i>
-  </button>
 
   <!-- MAIN -->
   <main class="flex-1 p-10 flex flex-col h-full overflow-hidden bg-slate-50">
     <div class="max-w-4xl mx-auto w-full flex flex-col h-full">
-      <div id="mobileHeader">
-        <h1>Hội Thánh Nguồn Sống</h1>
-        <p>Hệ Thống Đăng Ký - Check In</p>
-      </div>
-      <div id="searchDock" class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 shrink-0">
+      <div class="flex gap-4 mb-6 shrink-0">
         <div class="relative flex-1">
           <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 text-xl"></i>
-          <input type="search" id="searchInput" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="renderList()" onkeydown="handleSearchKey(event)" onsearch="runSearchFromInput()" placeholder="Search Name or Family Code.../ Tìm Tên hoặc Mã Gia đình..." class="w-full pl-16 pr-6 py-5 bg-white shadow-xl rounded-2xl text-xl font-bold outline-none border-none focus:ring-4 focus:ring-blue-100 transition-all">
+          <input type="text" id="searchInput" onkeyup="renderList()" placeholder="Search Name or Family Code.../ Tìm Tên hoặc Mã Gia đình..." class="w-full pl-16 pr-6 py-5 bg-white shadow-xl rounded-2xl text-xl font-bold outline-none border-none focus:ring-4 focus:ring-blue-100 transition-all">
         </div>
-        <button onclick="fetchData()" class="w-full sm:w-16 h-14 sm:h-16 bg-white rounded-2xl shadow-lg text-blue-600 flex items-center justify-center shrink-0"><i class="fas fa-sync-alt text-xl" id="syncIcon"></i></button>
+        <button onclick="fetchData()" class="w-16 h-16 bg-white rounded-2xl shadow-lg text-blue-600 flex items-center justify-center shrink-0"><i class="fas fa-sync-alt text-xl" id="syncIcon"></i></button>
       </div>
       <div id="familyActionBox" class="hidden mb-4 shrink-0">
-         <button id="familyBtn" onclick="payFullFamily()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-sm shadow-xl">
-          <span>PAY FOR ENTIRE FAMILY</span>
-          <span>THANH TOÁN CHO CẢ GIA ĐÌNH</span>
-         </button>
+         <button id="familyBtn" onclick="payFullFamily()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-sm shadow-xl">PAY FOR ENTIRE FAMILY / THANH TOÁN CHO CẢ GIA ĐÌNH</button>
       </div>
       <div id="resultList" class="flex-1 overflow-y-auto space-y-2 pr-2 pb-10"></div>
     </div>
@@ -460,71 +111,39 @@
   <script>
     let SCRIPT_URL = localStorage.getItem('nguonSongUrl');
     let masterData = [];
-    let dataLoadingPromise = null;
     let isWorking = false;
     let currentFilteredFamilyCode = null;
     let currentEditingName = null;
 
-    function jsonpRequest(params = {}) {
-      return new Promise((resolve, reject) => {
-        if (!SCRIPT_URL) {
-          reject("Missing Script URL");
-          return;
-        }
-
-        const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.round(100000 * Math.random());
-        const script = document.createElement('script');
-        const cleanup = () => {
-          delete window[callbackName];
-          const s = document.getElementById(callbackName);
-          if (s) document.body.removeChild(s);
-          clearTimeout(timeoutId);
-        };
-        const timeoutId = setTimeout(() => {
-          cleanup();
-          reject("Connection Timeout");
-        }, 15000);
-
-        window[callbackName] = (data) => {
-          cleanup();
-          resolve(data);
-        };
-
-        script.id = callbackName;
-        let url = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + `callback=${callbackName}`;
-        for (let k in params) url += `&${k}=${encodeURIComponent(params[k])}`;
-        script.src = url;
-        script.onerror = () => {
-          cleanup();
-          reject("Connection Error");
-        };
-        document.body.appendChild(script);
-      });
-    }
-
     async function fetchData() {
-      if(!SCRIPT_URL) {
-        window.location.href = 'index.html';
-        return;
-      }
-      if (dataLoadingPromise) return dataLoadingPromise;
+      if(!SCRIPT_URL) return;
       document.getElementById('syncIcon').classList.add('loading-spinner');
-      dataLoadingPromise = (async () => {
-        try {
-          masterData = await jsonpRequest();
-          renderList();
-        } catch (e) { console.error(e); }
-        finally {
-          document.getElementById('syncIcon').classList.remove('loading-spinner');
-          dataLoadingPromise = null;
-        }
-      })();
-      return dataLoadingPromise;
+      try {
+        const res = await fetch(SCRIPT_URL);
+        masterData = await res.json();
+        renderList();
+      } catch (e) { console.error(e); }
+      finally { document.getElementById('syncIcon').classList.remove('loading-spinner'); }
     }
     window.onload = fetchData;
 
     function sendCommand(params) {
-      return jsonpRequest(params);
+      return new Promise((resolve, reject) => {
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+        window[callbackName] = (data) => {
+          delete window[callbackName];
+          const s = document.getElementById(callbackName);
+          if(s) document.body.removeChild(s);
+          resolve(data);
+        };
+        const script = document.createElement('script');
+        script.id = callbackName;
+        let url = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + `callback=${callbackName}`;
+        for (let k in params) url += `&${k}=${encodeURIComponent(params[k])}`;
+        script.src = url;
+        script.onerror = () => reject("Connection Error");
+        document.body.appendChild(script);
+      });
     }
 
     function getAgeClass(age) {
@@ -539,27 +158,6 @@
     function openStatusFix(name) { currentEditingName = name; document.getElementById('statusTargetName').innerText = name; document.getElementById('statusModal').classList.remove('hidden'); }
     function openNameFix(name) { currentEditingName = name; document.getElementById('editNameInput').value = name; document.getElementById('nameModal').classList.remove('hidden'); }
     function closeModals() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('nameModal').classList.add('hidden'); }
-    function openRegistrationPanel() {
-      document.body.classList.add('registration-open');
-      setTimeout(() => document.getElementById('newName').focus(), 80);
-    }
-    function closeRegistrationPanel() {
-      document.body.classList.remove('registration-open');
-    }
-    function handleSearchKey(event) {
-      if (event.key !== 'Enter') return;
-      event.preventDefault();
-      runSearchFromInput();
-    }
-    async function runSearchFromInput() {
-      const input = document.getElementById('searchInput');
-      const query = input.value.trim();
-      input.blur();
-      if (query && (!Array.isArray(masterData) || masterData.length === 0)) {
-        await fetchData();
-      }
-      renderList();
-    }
 
     async function applyStatusFix(newStatus) {
       closeModals(); isWorking = true;
@@ -600,8 +198,6 @@
         const done = paymentStatus.includes('done');
         const free = paymentStatus.includes('free');
         const statusClass = done ? 'status-done' : (free ? 'status-free' : 'status-pending');
-        const age = (item.Age ?? "").toString().trim();
-        const ageText = age ? ` | ${age} TUỔI` : '';
 
         return `
           <div class="p-3 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between transition-all ${ageClass}">
@@ -611,7 +207,7 @@
                 <h3 class="font-black text-blue-600 uppercase text-lg leading-tight">
                   ${item.Name} <i onclick="openNameFix('${item.Name}')" class="fas fa-pen text-[10px] text-slate-300 cursor-pointer ml-1"></i>
                 </h3>
-                <p class="text-[10px] font-extrabold text-black uppercase tracking-widest mt-0.5">#${item['Family Code']}${ageText}</p>
+                <p class="text-[10px] font-extrabold text-black uppercase tracking-widest mt-0.5">#${item['Family Code']} | ${item.Age ? item.Age + ' TUỔI' : 'PHỤ HUYNH'}</p>
               </div>
             </div>
 
@@ -695,8 +291,7 @@
       saveBtn.classList.add('btn-processing');
       saveBtn.innerHTML = "SAVING... / ĐANG LƯU...";
 
-      let payload = {
-        action: 'Add',
+      let payload = { 
         Name: nameVal, 
         Age: ageVal, 
         FamilyCode: codeVal, 
@@ -705,8 +300,11 @@
       };
 
       try {
-        const res = await sendCommand(payload);
-        if (res && res.status && res.status !== 'success') throw new Error(res.message || "Save failed");
+        await fetch(SCRIPT_URL, { 
+          method: 'POST', 
+          mode: 'no-cors', 
+          body: JSON.stringify(payload) 
+        });
 
         // Reset form
         document.getElementById('newName').value = "";
@@ -728,81 +326,6 @@
         saveBtn.innerHTML = "Save & Continue / Lưu & Tiếp tục";
       }
     }
-
-    function initRegistrationFab() {
-      const fab = document.getElementById('registrationFab');
-      if (!fab) return;
-
-      let startX = 0;
-      let startY = 0;
-      let offsetX = 0;
-      let offsetY = 0;
-      let moved = false;
-      let suppressClick = false;
-
-      const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-      const placeFab = (left, top) => {
-        const margin = 12;
-        const rect = fab.getBoundingClientRect();
-        const safeTop = margin;
-        const safeBottom = window.innerHeight - rect.height - 96;
-        fab.style.left = `${clamp(left, margin, window.innerWidth - rect.width - margin)}px`;
-        fab.style.top = `${clamp(top, safeTop, Math.max(safeTop, safeBottom))}px`;
-        fab.style.right = 'auto';
-        fab.style.bottom = 'auto';
-      };
-
-      fab.addEventListener('pointerdown', (event) => {
-        if (window.innerWidth > 1024) return;
-        const rect = fab.getBoundingClientRect();
-        startX = event.clientX;
-        startY = event.clientY;
-        offsetX = event.clientX - rect.left;
-        offsetY = event.clientY - rect.top;
-        moved = false;
-        fab.classList.add('dragging');
-        fab.setPointerCapture(event.pointerId);
-      });
-
-      fab.addEventListener('pointermove', (event) => {
-        if (!fab.hasPointerCapture(event.pointerId)) return;
-        const distance = Math.hypot(event.clientX - startX, event.clientY - startY);
-        if (distance > 6) moved = true;
-        if (!moved) return;
-        event.preventDefault();
-        placeFab(event.clientX - offsetX, event.clientY - offsetY);
-      });
-
-      fab.addEventListener('pointerup', (event) => {
-        if (fab.hasPointerCapture(event.pointerId)) fab.releasePointerCapture(event.pointerId);
-        fab.classList.remove('dragging');
-        suppressClick = moved;
-      });
-
-      fab.addEventListener('click', () => {
-        if (suppressClick) {
-          suppressClick = false;
-          return;
-        }
-        openRegistrationPanel();
-      });
-
-      window.addEventListener('resize', () => {
-        if (window.innerWidth > 1024) {
-          closeRegistrationPanel();
-          fab.removeAttribute('style');
-          return;
-        }
-        const rect = fab.getBoundingClientRect();
-        placeFab(rect.left, rect.top);
-      });
-
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') closeRegistrationPanel();
-      });
-    }
-
-    window.addEventListener('load', initRegistrationFab);
 
   </script>
 </body>

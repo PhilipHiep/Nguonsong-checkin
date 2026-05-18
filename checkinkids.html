@@ -2,18 +2,16 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Nguồn Sống OS - Pickup System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-    * { box-sizing: border-box; }
     body { 
       font-family: 'Plus Jakarta Sans', sans-serif; 
       background-color: #1e40af; 
-      height: 100vh;
-      height: 100dvh;
+      height: 100vh; 
       overflow: hidden; 
     }
     .display-card { 
@@ -50,119 +48,12 @@
 
     #memberList::-webkit-scrollbar { width: 5px; }
     #memberList::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
-
-    @media (max-width: 1023px) {
-      body {
-        height: auto;
-        min-height: 100vh;
-        min-height: 100dvh;
-        overflow: auto;
-        align-items: flex-start !important;
-      }
-
-      .display-card {
-        max-height: none;
-        min-height: calc(100vh - 6rem);
-        min-height: calc(100dvh - 6rem);
-      }
-
-      #memberList {
-        overflow: visible !important;
-      }
-    }
-
-    @media (max-width: 767px), (max-height: 500px) and (max-width: 1024px) {
-      body {
-        padding: 0.75rem !important;
-        padding-bottom: 7rem !important;
-      }
-
-      .display-card {
-        border-radius: 1.25rem;
-        padding: 1rem !important;
-        padding-bottom: 7.5rem !important;
-      }
-
-      #familySearchDock {
-        background: rgba(30, 64, 175, 0.94);
-        border-top: 1px solid rgba(255, 255, 255, 0.18);
-        bottom: 0;
-        box-shadow: 0 -18px 40px -26px rgba(15, 23, 42, 0.75);
-        left: 0;
-        margin: 0 !important;
-        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
-        position: fixed;
-        right: 0;
-        z-index: 60;
-      }
-
-      #familySearchDock label {
-        color: rgba(255, 255, 255, 0.8) !important;
-      }
-
-      #familySearch {
-        font-size: 2rem !important;
-        padding: 0.85rem 1rem !important;
-      }
-
-      #familyContent {
-        padding: 0.75rem !important;
-      }
-
-      #familyContent > div:first-child {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-      }
-
-      #familyContent > div:first-child p {
-        font-size: 2.75rem !important;
-      }
-
-      #paymentWarning span {
-        animation: none;
-        white-space: normal;
-        line-height: 1.25;
-      }
-
-      #memberList > div {
-        align-items: stretch !important;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-
-      #memberList > div > div:first-child {
-        min-width: 0;
-      }
-
-      #memberList h4 {
-        white-space: normal;
-        overflow-wrap: anywhere;
-      }
-
-      .status-badge {
-        align-self: flex-start;
-        max-width: 100%;
-        line-height: 1.25;
-        white-space: normal;
-      }
-    }
-
-    @media (min-width: 768px) and (max-width: 1023px) {
-      body {
-        padding: 1rem !important;
-      }
-
-      .display-card {
-        padding: 1.25rem !important;
-      }
-    }
   </style>
 </head>
 <body class="flex items-center justify-center p-4">
   <div class="max-w-6xl w-full h-full flex flex-col">
     
-    <div class="flex justify-between items-center gap-3 mb-3">
+    <div class="flex justify-between items-center mb-3">
       <div class="flex items-center gap-3 text-white">
         <div class="bg-white/20 p-3 rounded-xl backdrop-blur-md"><i class="fas fa-desktop text-xl text-white"></i></div>
         <h1 class="text-xl font-black uppercase tracking-tight leading-none text-white">Pickup System <br><span class="text-[8px] opacity-80 tracking-[0.2em]">Giao nhận trẻ</span></h1>
@@ -173,10 +64,10 @@
     </div>
 
     <div class="display-card p-6 flex-1 overflow-hidden">
-      <div id="familySearchDock" class="mb-4">
+      <div class="mb-4">
         <label class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] ml-2 mb-1 block italic">Enter Family Code / Nhập mã số thẻ</label>
-        <input type="search" id="familySearch" inputmode="numeric" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="searchFamily()" onkeydown="handleFamilySearchKey(event)" onsearch="runFamilySearchFromInput()" placeholder="101"
-          class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl py-3 px-6 text-3xl sm:text-4xl font-black text-blue-600 outline-none focus:border-blue-500 transition-all">
+        <input type="number" id="familySearch" oninput="searchFamily()" placeholder="101" 
+          class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl py-3 px-6 text-4xl font-black text-blue-600 outline-none focus:border-blue-500 transition-all">
       </div>
 
       <div id="resultArea" class="flex-1 border-2 border-dashed border-slate-100 rounded-[1.5rem] flex flex-col overflow-hidden relative">
@@ -205,59 +96,14 @@
   <script>
     let SCRIPT_URL = localStorage.getItem('nguonSongUrl');
     let masterData = [];
-    let dataLoadingPromise = null;
-
-    function jsonpRequest(params = {}) {
-      return new Promise((resolve, reject) => {
-        if (!SCRIPT_URL) {
-          reject("Missing Script URL");
-          return;
-        }
-
-        const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.round(100000 * Math.random());
-        const script = document.createElement('script');
-        const cleanup = () => {
-          delete window[callbackName];
-          const s = document.getElementById(callbackName);
-          if (s) document.body.removeChild(s);
-          clearTimeout(timeoutId);
-        };
-        const timeoutId = setTimeout(() => {
-          cleanup();
-          reject("Connection Timeout");
-        }, 15000);
-
-        window[callbackName] = (data) => {
-          cleanup();
-          resolve(data);
-        };
-
-        script.id = callbackName;
-        let url = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + `callback=${callbackName}`;
-        for (let k in params) url += `&${k}=${encodeURIComponent(params[k])}`;
-        script.src = url;
-        script.onerror = () => {
-          cleanup();
-          reject("Connection Error");
-        };
-        document.body.appendChild(script);
-      });
-    }
 
     async function loadData() {
-      if(!SCRIPT_URL) {
-        window.location.href = 'index.html';
-        return;
-      }
-      if (dataLoadingPromise) return dataLoadingPromise;
-      dataLoadingPromise = (async () => {
-        try {
-          masterData = await jsonpRequest();
-          searchFamily();
-        } catch(e) {}
-        finally { dataLoadingPromise = null; }
-      })();
-      return dataLoadingPromise;
+      if(!SCRIPT_URL) return;
+      try {
+        const res = await fetch(SCRIPT_URL);
+        masterData = await res.json();
+        searchFamily(); 
+      } catch(e) {}
     }
     setInterval(loadData, 20000);
     loadData();
@@ -271,24 +117,8 @@
       return "age-parent";
     }
 
-    function handleFamilySearchKey(event) {
-      if (event.key !== 'Enter') return;
-      event.preventDefault();
-      runFamilySearchFromInput();
-    }
-
-    async function runFamilySearchFromInput() {
-      const input = document.getElementById('familySearch');
-      const code = input.value.trim();
-      input.blur();
-      if (code && (!Array.isArray(masterData) || masterData.length === 0)) {
-        await loadData();
-      }
-      searchFamily();
-    }
-
     function searchFamily() {
-      const code = document.getElementById('familySearch').value.trim();
+      const code = document.getElementById('familySearch').value;
       const idle = document.getElementById('idleState');
       const content = document.getElementById('familyContent');
       const memberList = document.getElementById('memberList');
@@ -302,17 +132,13 @@
         idle.classList.add('hidden'); content.classList.remove('hidden');
         document.getElementById('displayFamilyCode').innerText = code;
         
-        const hasPending = members.some(m => {
-          const payment = (m.Payment || "").toString();
-          return payment !== 'Done' && !payment.toLowerCase().includes('free');
-        });
+        const hasPending = members.some(m => m.Payment !== 'Done' && !m.Payment.toString().toLowerCase().includes('free'));
         warning.classList.toggle('hidden', !hasPending);
 
         memberList.innerHTML = members.map(m => {
-          const age = (m.Age ?? "").toString().trim();
+          const age = m.Age || "";
           const isChild = age !== "";
           const ageClass = getAgeClass(age);
-          const payment = (m.Payment || "").toString();
           
           return `
             <div class="p-4 rounded-2xl shadow-md flex items-center justify-between transition-all ${ageClass}">
@@ -322,11 +148,13 @@
                 </div>
                 <div class="min-w-0">
                   <h4 class="font-black uppercase truncate text-[16px] tracking-tight">${m.Name}</h4>
-                  ${isChild ? `<p class="text-[9px] font-bold uppercase tracking-[0.1em]">${age} TUỔI</p>` : ''}
+                  <p class="text-[9px] font-bold uppercase tracking-[0.1em]">
+                    ${isChild ? age + ' TUỔI / AGE' : 'PARENT / PHỤ HUYNH'}
+                  </p>
                 </div>
               </div>
-              <span class="status-badge shrink-0 ${payment === 'Done' || payment === 'Free' ? 'status-done' : 'status-pending'}">
-                ${payment === 'Done' ? 'PAID' : (payment === 'Free' ? 'FREE / MIỄN PHÍ' : 'UNPAID / CHƯA THANH TOÁN')}
+              <span class="status-badge shrink-0 ${m.Payment === 'Done' || m.Payment === 'Free' ? 'status-done' : 'status-pending'}">
+                ${m.Payment === 'Done' ? 'PAID' : (m.Payment === 'Free' ? 'FREE / MIỄN PHÍ' : 'UNPAID / CHƯA THANH TOÁN')}
               </span>
             </div>
           `;

@@ -8,38 +8,31 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-    * { box-sizing: border-box; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f0f0f0; min-height: 100vh; min-height: 100dvh; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f0f0f0; }
     .glass-card { background: white; border: 1px solid rgba(255, 255, 255, 0.2); }
     .option-card:hover { transform: translateY(-8px); border-color: #2563eb; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.15); }
-    .text-nowrap { white-space: normal; }
-    @media (min-width: 1280px) {
-      .text-nowrap { white-space: nowrap; }
-    }
-    @media (max-width: 767px) {
-      .option-card:hover { transform: none; }
-    }
+    .text-nowrap { white-space: nowrap; }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 sm:p-6">
+<body class="min-h-screen flex items-center justify-center p-6">
 
   <!-- MÀN HÌNH KHÓA (WIDE VERSION - RỘNG NGANG) -->
-  <div id="lockScreen" class="fixed inset-0 bg-[#0f172a] z-[100] flex items-center justify-center p-4 sm:p-6 hidden overflow-y-auto">
+  <div id="lockScreen" class="fixed inset-0 bg-[#0f172a] z-[100] flex items-center justify-center p-6 hidden">
     <!-- Khung trắng cực rộng (max-w-7xl) và giảm padding dọc (py-12) -->
-    <div class="bg-white px-5 py-8 sm:px-10 sm:py-10 lg:px-16 lg:py-12 rounded-[2rem] sm:rounded-[3.5rem] max-w-7xl w-full shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] flex flex-col items-center">
+    <div class="bg-white px-16 py-12 rounded-[3.5rem] max-w-7xl w-full shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] flex flex-col items-center">
       
       <!-- Icon -->
-      <div class="w-16 h-16 sm:w-24 sm:h-24 bg-blue-100 text-blue-600 rounded-[1.25rem] sm:rounded-[2rem] flex items-center justify-center text-3xl sm:text-5xl mb-6 sm:mb-8 shadow-inner">
+      <div class="w-24 h-24 bg-blue-100 text-blue-600 rounded-[2rem] flex items-center justify-center text-5xl mb-8 shadow-inner">
         <i class="fas fa-key"></i>
       </div>
 
       <!-- Tiêu đề bự và nằm trên 1 dòng (text-nowrap) -->
-      <h2 class="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-800 mb-4 uppercase italic tracking-tighter text-nowrap text-center leading-tight">
+      <h2 class="text-5xl font-black text-slate-800 mb-4 uppercase italic tracking-tighter text-nowrap">
         SYSTEM ACCESS / TRUY CẬP HỆ THỐNG
       </h2>
 
       <!-- Mô tả -->
-      <p class="text-blue-600 text-sm sm:text-lg lg:text-xl font-blue mb-8 sm:mb-10 font-medium text-center max-w-4xl">
+      <p class="text-blue-600 text-xl font-blue mb-10 font-medium text-center">
         Please enter your Google Script URL to connect / 
         <span class="text-blue-600 font-blue italic">Vui lòng nhập URL Google Script để kết nối.</span>
       </p>
@@ -47,11 +40,11 @@
       <!-- Container chứa Input và Button nằm ngang hoặc xếp gọn -->
       <div class="w-full max-w-5xl space-y-6">
         <input type="password" id="secureUrlInput" 
-          placeholder="https://script.google.com/..." 
-          class="w-full p-4 sm:p-7 border-4 border-slate-100 rounded-[1.25rem] sm:rounded-[1.5rem] outline-none focus:border-blue-500 transition-all text-base sm:text-xl text-center shadow-sm">
+          placeholder="https://script.google.com/macros/s/..." 
+          class="w-full p-7 border-4 border-slate-100 rounded-[1.5rem] outline-none focus:border-blue-500 transition-all text-xl text-center shadow-sm">
 
         <button onclick="unlockSystem()" 
-          class="w-full bg-[#2563eb] text-white py-5 sm:py-7 rounded-[1.25rem] sm:rounded-[1.5rem] font-black text-base sm:text-2xl uppercase shadow-2xl shadow-blue-500/40 hover:bg-blue-700 active:scale-95 transition-all tracking-[0.12em] sm:tracking-[0.2em]">
+          class="w-full bg-[#2563eb] text-white py-7 rounded-[1.5rem] font-black text-2xl uppercase shadow-2xl shadow-blue-500/40 hover:bg-blue-700 active:scale-95 transition-all tracking-[0.2em]">
           CONNECT / KẾT NỐI
         </button>
       </div>
@@ -59,19 +52,19 @@
   </div>
 
   <!-- CỔNG ĐIỀU HƯỚNG (PORTAL) -->
-  <div id="portalContent" class="max-w-6xl w-full hidden py-4 sm:py-8">
-    <div class="text-center mb-8 sm:mb-12 lg:mb-16">
-      <h1 class="text-3xl sm:text-5xl font-black text-blue-800 uppercase italic tracking-tighter leading-tight">Hội Thánh Nguồn Sống</h1>
+  <div id="portalContent" class="max-w-6xl w-full hidden">
+    <div class="text-center mb-16">
+      <h1 class="text-5xl font-black text-blue-800 uppercase italic tracking-tighter">Hội Thánh Nguồn Sống</h1>
       <p class="text-slate-500 font-bold mt-2 uppercase tracking-widest text-xs">Hệ Thống Check-In và Check-Out</p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
       <!-- Option 1: Check-in -->
-      <a href="checkin.html" class="option-card glass-card p-6 sm:p-10 lg:p-12 rounded-[2rem] sm:rounded-[3.5rem] shadow-xl transition-all flex flex-col items-center text-center group">
-        <div class="w-20 h-20 sm:w-28 sm:h-28 bg-blue-600 text-white rounded-[1.75rem] sm:rounded-[2.5rem] flex items-center justify-center text-3xl sm:text-5xl mb-5 sm:mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-blue-200">
+      <a href="checkin.html" class="option-card glass-card p-12 rounded-[3.5rem] shadow-xl transition-all flex flex-col items-center text-center group">
+        <div class="w-28 h-28 bg-blue-600 text-white rounded-[2.5rem] flex items-center justify-center text-5xl mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-blue-200">
           <i class="fas fa-user-check"></i>
         </div>
-        <h2 class="text-lg sm:text-3xl font-black text-slate-600 uppercase italic text-nowrap leading-tight">Check-in / Hệ thống Check-in</h2>
+        <h2 class="text-3xl font-black text-slate-600 uppercase italic text-nowrap">Check-in / Hệ thống Check-in</h2>
         <div class="mt-4">
           <p class="text-slate-500 text-sm font-bold uppercase tracking-wide">Registration & Payment Management</p>
           <p class="text-slate-400 text-xs italic mt-1 font-medium">Đăng ký & Quản lý Thanh toán</p>
@@ -79,11 +72,11 @@
       </a>
 
       <!-- Option 2: Check-in Kids -->
-      <a href="checkinkids.html" class="option-card glass-card p-6 sm:p-10 lg:p-12 rounded-[2rem] sm:rounded-[3.5rem] shadow-xl transition-all flex flex-col items-center text-center group">
-        <div class="w-20 h-20 sm:w-28 sm:h-28 bg-orange-500 text-white rounded-[1.75rem] sm:rounded-[2.5rem] flex items-center justify-center text-3xl sm:text-5xl mb-5 sm:mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-orange-200">
+      <a href="checkinkids.html" class="option-card glass-card p-12 rounded-[3.5rem] shadow-xl transition-all flex flex-col items-center text-center group">
+        <div class="w-28 h-28 bg-orange-500 text-white rounded-[2.5rem] flex items-center justify-center text-5xl mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-orange-200">
           <i class="fas fa-child"></i>
         </div>
-        <h2 class="text-lg sm:text-3xl font-black text-slate-600 uppercase italic text-nowrap leading-tight">Kids System / Hệ thống cho Trẻ</h2>
+        <h2 class="text-3xl font-black text-slate-600 uppercase italic text-nowrap">Kids System / Hệ thống cho Trẻ</h2>
         <div class="mt-4">
           <p class="text-slate-500 text-sm font-bold uppercase tracking-wide">Child Release Management</p>
           <p class="text-slate-400 text-xs italic mt-1 font-medium">Hệ thống quản lý giao nhận trẻ</p>
