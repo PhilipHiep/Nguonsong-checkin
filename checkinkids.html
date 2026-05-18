@@ -71,7 +71,7 @@
       }
     }
 
-    @media (max-width: 767px) {
+    @media (max-width: 767px), (max-height: 500px) and (max-width: 1024px) {
       body {
         padding: 0.75rem !important;
         padding-bottom: 7rem !important;
@@ -175,7 +175,7 @@
     <div class="display-card p-6 flex-1 overflow-hidden">
       <div id="familySearchDock" class="mb-4">
         <label class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] ml-2 mb-1 block italic">Enter Family Code / Nhập mã số thẻ</label>
-        <input type="number" id="familySearch" oninput="searchFamily()" placeholder="101" 
+        <input type="search" id="familySearch" inputmode="numeric" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="searchFamily()" onkeydown="handleFamilySearchKey(event)" onsearch="runFamilySearchFromInput()" placeholder="101" 
           class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl py-3 px-6 text-3xl sm:text-4xl font-black text-blue-600 outline-none focus:border-blue-500 transition-all">
       </div>
 
@@ -226,8 +226,24 @@
       return "age-parent";
     }
 
+    function handleFamilySearchKey(event) {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      runFamilySearchFromInput();
+    }
+
+    async function runFamilySearchFromInput() {
+      const input = document.getElementById('familySearch');
+      const code = input.value.trim();
+      searchFamily();
+      input.blur();
+      if (code && (!Array.isArray(masterData) || masterData.length === 0)) {
+        await loadData();
+      }
+    }
+
     function searchFamily() {
-      const code = document.getElementById('familySearch').value;
+      const code = document.getElementById('familySearch').value.trim();
       const idle = document.getElementById('idleState');
       const content = document.getElementById('familyContent');
       const memberList = document.getElementById('memberList');

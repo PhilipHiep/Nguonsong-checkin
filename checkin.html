@@ -420,7 +420,7 @@
       <div id="searchDock" class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 shrink-0">
         <div class="relative flex-1">
           <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 text-xl"></i>
-          <input type="text" id="searchInput" onkeyup="renderList()" placeholder="Search Name or Family Code.../ Tìm Tên hoặc Mã Gia đình..." class="w-full pl-16 pr-6 py-5 bg-white shadow-xl rounded-2xl text-xl font-bold outline-none border-none focus:ring-4 focus:ring-blue-100 transition-all">
+          <input type="search" id="searchInput" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="renderList()" onkeydown="handleSearchKey(event)" onsearch="runSearchFromInput()" placeholder="Search Name or Family Code.../ Tìm Tên hoặc Mã Gia đình..." class="w-full pl-16 pr-6 py-5 bg-white shadow-xl rounded-2xl text-xl font-bold outline-none border-none focus:ring-4 focus:ring-blue-100 transition-all">
         </div>
         <button onclick="fetchData()" class="w-full sm:w-16 h-14 sm:h-16 bg-white rounded-2xl shadow-lg text-blue-600 flex items-center justify-center shrink-0"><i class="fas fa-sync-alt text-xl" id="syncIcon"></i></button>
       </div>
@@ -513,6 +513,20 @@
     }
     function closeRegistrationPanel() {
       document.body.classList.remove('registration-open');
+    }
+    function handleSearchKey(event) {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      runSearchFromInput();
+    }
+    async function runSearchFromInput() {
+      const input = document.getElementById('searchInput');
+      const query = input.value.trim();
+      renderList();
+      input.blur();
+      if (query && (!Array.isArray(masterData) || masterData.length === 0)) {
+        await fetchData();
+      }
     }
 
     async function applyStatusFix(newStatus) {
