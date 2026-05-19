@@ -129,10 +129,13 @@
         align-items: stretch !important;
         flex-direction: column;
         gap: 0.75rem;
+        position: relative;
       }
 
       #memberList > div > div:first-child {
         min-width: 0;
+        padding-right: 8.75rem;
+        width: 100%;
       }
 
       #memberList h4 {
@@ -141,9 +144,15 @@
       }
 
       .status-badge {
-        align-self: flex-start;
+        align-self: auto;
         max-width: 100%;
+        font-size: 9px;
         line-height: 1.25;
+        max-width: 8.25rem;
+        position: absolute;
+        right: 1rem;
+        text-align: center;
+        top: 1rem;
         white-space: normal;
       }
     }
@@ -326,7 +335,7 @@
                 </div>
               </div>
               <span class="status-badge shrink-0 ${payment === 'Done' || payment === 'Free' ? 'status-done' : 'status-pending'}">
-                ${payment === 'Done' ? 'PAID' : (payment === 'Free' ? 'FREE / MIỄN PHÍ' : 'UNPAID / CHƯA THANH TOÁN')}
+                ${payment === 'Done' ? 'PAID' : (payment === 'Free' ? 'FREE / MIỄN PHÍ' : 'UNPAID / CHƯA TRẢ')}
               </span>
             </div>
           `;
